@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 
 import { BarModel } from '../../app/models/bar.model';

@@ -4,10 +4,7 @@ export class BarModel {
     public picture: string;
     public isChecked: boolean;
 
-    public adress: string;
-    public get adressHtml(): string {
-        return this.adress.replace(' 75', '<br/> 75');
-    }
+    public adress: string; 
     public latitude: number;
     public longitude: number;
 
