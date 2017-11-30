@@ -1,0 +1,36 @@
+page-home {
+    .card-background-page {
+        
+          ion-card {
+            position: relative;
+            text-align: center;
+            height: 30vh;
+            background-position: center;
+            background-size: cover;
+            
+            margin: 4px;
+            width: calc(100% - 8px);
+          }
+        
+          .card-title {
+            position: absolute;
+            top: 36%;
+            font-size: 2.0em;
+            width: 100%;
+            font-weight: bold;
+            color: #fff;
+          }
+        
+          .card-subtitle {
+            font-size: 1.0em;
+            position: absolute;
+            top: 52%;
+            width: 100%;
+            color: #fff;
+          }
+        
+        }
+        agm-map {
+            height: calc(100vh - 56px);
+        }
+}

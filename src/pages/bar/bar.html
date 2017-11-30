@@ -1,0 +1,60 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title></ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <div class="image" [style.background-image]="safeUrl((bar|async)?.picture)">
+      <h1 class="caption">{{(bar|async)?.name}}</h1>
+    </div>
+    <ion-card-content>
+      <ion-item>
+        <ion-icon name="compass" item-start large></ion-icon>
+        <h2>
+          <a href="http://maps.google.com/maps?daddr={{(bar|async)?.adress}}" [innerHtml]="(bar|async)?.adressHtml"></a>
+        </h2>
+        <p>0.8 km - 17 minutes</p>
+      </ion-item>
+      <ion-list>
+        <ion-list-header>
+          <ion-icon name="time" item-start large></ion-icon>
+          Horaires
+          <ion-badge item-end color="primary">Ouvert</ion-badge>
+        </ion-list-header>
+        <ion-item>
+          <span item-start>Lundi</span>
+          <span item-end>{{(bar|async)?.schedule.monday}}</span>
+        </ion-item>
+        <ion-item>
+          <span item-start>Mardi</span>
+          <span item-end>{{(bar|async)?.schedule.tuesday}}</span>
+        </ion-item>
+        <ion-item>
+          <span item-start>Mercredi</span>
+          <span item-end>{{(bar|async)?.schedule.wednesday}}</span>
+        </ion-item>
+        <ion-item>
+          <span item-start>Jeudi</span>
+          <span item-end>{{(bar|async)?.schedule.thursday}}</span>
+        </ion-item>
+        <ion-item>
+          <span item-start>Vendredi</span>
+          <span item-end>{{(bar|async)?.schedule.friday}}</span>
+        </ion-item>
+        <ion-item>
+          <span item-start>Samedi</span>
+          <span item-end>{{(bar|async)?.schedule.saturday}}</span>
+        </ion-item>
+        <ion-item>
+          <span item-start>Dimanche</span>
+          <span item-end>{{(bar|async)?.schedule.sunday}}</span>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

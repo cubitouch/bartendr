@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Bars</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only color="royal" (click)="toggleMapDisplay()">
+        <ion-icon name="map" *ngIf="!isModeMap"></ion-icon>
+        <ion-icon name="albums" *ngIf="isModeMap"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+<ion-content class="card-background-page">
+  <div *ngIf="isModeMap">
+    <agm-map [styles]="mapStyles" [fitBounds]="mapBounds | async">
+      <agm-marker-cluster imagePath="https://raw.githubusercontent.com/googlemaps/v3-utility-library/master/markerclustererplus/images/m">
+        <agm-marker *ngFor="let bar of bars | async" [latitude]="bar.latitude" [longitude]="bar.longitude" (click)="openBarPage(bar.id)"></agm-marker>
+      </agm-marker-cluster>
+    </agm-map>
+  </div>
+  <div *ngIf="!isModeMap">
+    <ion-card *ngFor="let bar of bars | async" [style.background-image]="safeUrl(bar.picture)" (click)="openBarPage(bar.id)">
+      <div class="card-title">{{bar.name}}</div>
+      <div class="card-subtitle">{{bar.adress}}</div>
+    </ion-card>
+  </div>
+</ion-content>
