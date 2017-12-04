@@ -1518,37 +1518,5 @@
     "Longitude": "2,3880737",
     "Id": 98,
     "Vérifié": ""
-  },
-  {
-    "Nom": "La P'tite Mousse",
-    "Lundi": "",
-    "Mardi": "",
-    "Mercredi": "",
-    "Jeudi": "",
-    "Vendredi": "",
-    "Samedi": "",
-    "Dimanche": "",
-    "Photo": "",
-    "Adresse": "29 Rue de Douai, 75009 Paris",
-    "Latitude": "",
-    "Longitude": "",
-    "Id": 99,
-    "Vérifié": ""
-  },
-  {
-    "Nom": "Le 39",
-    "Lundi": "",
-    "Mardi": "",
-    "Mercredi": "",
-    "Jeudi": "",
-    "Vendredi": "",
-    "Samedi": "",
-    "Dimanche": "",
-    "Photo": "",
-    "Adresse": "39 Rue Beaubourg, 75003 Paris",
-    "Latitude": "",
-    "Longitude": "",
-    "Id": 100,
-    "Vérifié": ""
   }
 ]

@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
+
 import { HttpClientModule } from '@angular/common/http';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { AgmCoreModule } from '@agm/core';
@@ -13,6 +14,7 @@ import { BarPage } from '../pages/bar/bar';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { BarRepository } from './services/bars.repository';
+import { LocationService } from './services/location.service';
 
 @NgModule({
   declarations: [
@@ -47,7 +49,8 @@ import { BarRepository } from './services/bars.repository';
     StatusBar,
     SplashScreen,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    BarRepository
+    BarRepository,
+    LocationService
   ]
 })
 export class AppModule { }

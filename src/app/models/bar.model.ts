@@ -1,12 +1,19 @@
+
+
+import { Observable } from "rxjs/Observable";
+import { LocationService } from '../services/location.service';
+
 export class BarModel {
     public id: number;
     public name: string;
     public picture: string;
     public isChecked: boolean;
 
-    public adress: string; 
+    public adress: string;
     public latitude: number;
     public longitude: number;
+    public distance: Observable<number>;
+    public time: Observable<number>;
 
     public schedule: HoraireModel;
 
@@ -14,7 +21,7 @@ export class BarModel {
         this.schedule = new HoraireModel();
     }
 
-    public static from(data: any): BarModel {
+    public static from(data: any, locationService: LocationService): BarModel {
         const model = new BarModel();
 
         if (data) {
@@ -33,16 +40,19 @@ export class BarModel {
             model.schedule.friday = data.Vendredi;
             model.schedule.saturday = data.Samedi;
             model.schedule.sunday = data.Dimanche;
+
+            model.distance = locationService.getDistance(model);
+            model.time = model.distance.map(distance => distance / 4 * 60);
         }
 
         return model;
     }
 
-    public static fromList(data: any[]): BarModel[] {
+    public static fromList(data: any[], locationService: LocationService): BarModel[] {
         const models = new Array<BarModel>();
 
         if (data) {
-            data.forEach(item => models.push(BarModel.from(item)));
+            data.forEach(item => models.push(BarModel.from(item, locationService)));
         }
 
         return models;

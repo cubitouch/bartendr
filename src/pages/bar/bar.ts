@@ -31,8 +31,7 @@ export class BarPage implements OnInit {
     this.id = parseFloat(this.navParams.data['id']);
 
     this.bar = this.barsRepository.bars
-      // .do(bars => console.log(bars))
       .map(bars => bars.filter(bar => bar.id === this.id)[0])
-      .share();
+      .shareReplay();
   }
 }

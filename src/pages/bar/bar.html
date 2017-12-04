@@ -18,7 +18,11 @@
         <h2>
           <a href="http://maps.google.com/maps?daddr={{(bar|async)?.adress}}">{{(bar|async)?.adress}}</a>
         </h2>
-        <p>0.8 km - 17 minutes</p>
+        <p>
+          {{(bar|async)?.distance | async | number:'1.1-1'}} km
+          -
+          {{(bar|async)?.time | async | number:'1.1-1'}} minutes
+        </p>
       </ion-item>
       <ion-list>
         <ion-list-header>
