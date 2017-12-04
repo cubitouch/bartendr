@@ -10,7 +10,6 @@ const buildDirPath = 'www/build';
 /* This could likely be pulled from Webpack stats, but this'll do for now ... */
 util.getHashForFile = function (fileName, fileType) {
     const result = fs.readdirSync(buildDirPath).filter(file => {
-        console.log('file', file);
         return file.startsWith(fileName) && file.endsWith(fileType) && (file.indexOf('map') === -1)
     })[0];
     return result.split('.')[1];
