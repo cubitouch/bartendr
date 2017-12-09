@@ -3,6 +3,7 @@ import { ErrorHandler, NgModule } from '@angular/core';
 
 import { HttpClientModule } from '@angular/common/http';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
+import { IonicStorageModule } from '@ionic/storage';
 import { AgmCoreModule } from '@agm/core';
 import { AgmJsMarkerClustererModule } from '@agm/js-marker-clusterer';
 
@@ -15,6 +16,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { BarRepository } from './services/bars.repository';
 import { LocationService } from './services/location.service';
+import { TimeService } from './services/time.service';
 
 @NgModule({
   declarations: [
@@ -33,6 +35,7 @@ import { LocationService } from './services/location.service';
         { component: BarPage, name: 'Bar', segment: 'bars/:id', defaultHistory: [HomePage] }
       ]
     }),
+    IonicStorageModule.forRoot(),
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyD61F5jFB_8ql02dWz6ql73Ve076nTEuQE'
     }),
@@ -50,7 +53,8 @@ import { LocationService } from './services/location.service';
     SplashScreen,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     BarRepository,
-    LocationService
+    LocationService,
+    TimeService
   ]
 })
 export class AppModule { }

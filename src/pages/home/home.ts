@@ -10,6 +10,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/share';
 import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/startWith';
+import 'rxjs/add/operator/take';
 import 'rxjs/add/observable/combineLatest';
 import { BarModel } from '../../app/models/bar.model';
 import { BarPage } from '../bar/bar';
@@ -40,7 +41,6 @@ export class HomePage implements OnInit {
     private locationService: LocationService,
     private sanitization: DomSanitizer) {
     this.isModeMap = false;
-    this.position = locationService.position;
   }
 
   public safeUrl(value: string): SafeStyle {
@@ -60,6 +60,7 @@ export class HomePage implements OnInit {
     infiniteScroll.complete();
   }
   ngOnInit() {
+    this.position = this.locationService.position;
     this.bars = this.barsRepository.bars;
 
     this.mapBounds = this.bars.map(bars => {
@@ -92,10 +93,11 @@ export class HomePage implements OnInit {
     this.pageSizeIncrease = new Subject<any>();
     this.pageSize = this.pageSizeIncrease.scan((acc, x) => acc + this.pageSizeDefault, this.pageSizeDefault).startWith(this.pageSizeDefault);
     this.barsDisplayed = Observable.combineLatest(this.bars, this.pageSize)
-      // .do(([bars, size]) => console.log('bars, size', bars, size))
       .map(([bars, size]) => bars.slice(0, size));
     this.isLazyLoadingAvailable = Observable.combineLatest(this.bars, this.pageSize)
       .map(([bars, size]) => bars.length >= size);
+
+    // this.bars.take(1).subscribe(bars => bars.forEach(bar => console.log('"' + bar.picture + '",')));
   }
 
 }

@@ -29,6 +29,7 @@
     "ionic-angular": "3.9.2",
     "ionicons": "3.0.0",
     "js-marker-clusterer": "^1.0.0",
+    "moment": "^2.19.3",
     "rxjs": "^5.5.2",
     "sw-toolbox": "3.6.0",
     "zone.js": "0.8.18"
@@ -36,11 +37,13 @@
   "devDependencies": {
     "@ionic/app-scripts": "3.1.2",
     "md5": "^2.2.1",
+    "rimraf": "^2.6.2",
+    "sharp": "^0.18.4",
     "typescript": "2.4.2"
   },
   "description": "An Ionic project",
   "config": {
     "ionic_bundler": "webpack",
     "ionic_webpack": "./webpack.config.js"
-  } 
+  }
 }

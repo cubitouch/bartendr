@@ -19,44 +19,19 @@
           <a href="http://maps.google.com/maps?daddr={{(bar|async)?.adress}}">{{(bar|async)?.adress}}</a>
         </h2>
         <p>
-          {{(bar|async)?.distance | async | number:'1.1-1'}} km
-          -
-          {{(bar|async)?.time | async | number:'1.1-1'}} minutes
+          {{(bar|async)?.distance | async | number:'1.1-1'}} km - {{(bar|async)?.time | async | number:'1.1-1'}} minutes
         </p>
       </ion-item>
       <ion-list>
         <ion-list-header>
           <ion-icon name="time" item-start large></ion-icon>
           Horaires
-          <ion-badge item-end color="primary">Ouvert</ion-badge>
+          <ion-badge item-end color="primary" *ngIf="(bar|async)?.schedule.isOpenNow|async">Ouvert</ion-badge>
+          <ion-badge item-end color="danger" *ngIf="!((bar|async)?.schedule.isOpenNow|async)">Fermé</ion-badge>
         </ion-list-header>
-        <ion-item>
-          <span item-start>Lundi</span>
-          <span item-end>{{(bar|async)?.schedule.monday}}</span>
-        </ion-item>
-        <ion-item>
-          <span item-start>Mardi</span>
-          <span item-end>{{(bar|async)?.schedule.tuesday}}</span>
-        </ion-item>
-        <ion-item>
-          <span item-start>Mercredi</span>
-          <span item-end>{{(bar|async)?.schedule.wednesday}}</span>
-        </ion-item>
-        <ion-item>
-          <span item-start>Jeudi</span>
-          <span item-end>{{(bar|async)?.schedule.thursday}}</span>
-        </ion-item>
-        <ion-item>
-          <span item-start>Vendredi</span>
-          <span item-end>{{(bar|async)?.schedule.friday}}</span>
-        </ion-item>
-        <ion-item>
-          <span item-start>Samedi</span>
-          <span item-end>{{(bar|async)?.schedule.saturday}}</span>
-        </ion-item>
-        <ion-item>
-          <span item-start>Dimanche</span>
-          <span item-end>{{(bar|async)?.schedule.sunday}}</span>
+        <ion-item *ngFor="let day of (bar|async)?.schedule.openingTimes" [color]="(day.isToday|async) ? 'primary' : ''">
+          <span item-start>{{day.label}}</span>
+          <span item-end>{{day.hoursFormat}}</span>
         </ion-item>
       </ion-list>
     </ion-card-content>

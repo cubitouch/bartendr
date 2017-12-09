@@ -4,6 +4,8 @@ import { Subject } from "rxjs/Subject";
 import 'rxjs/add/operator/shareReplay';
 import 'rxjs/add/operator/publishBehavior';
 import 'rxjs/add/operator/debounceTime';
+import 'rxjs/add/observable/fromPromise';
+import { Storage } from '@ionic/storage';
 import { BarModel } from "../models/bar.model";
 
 @Injectable()
@@ -11,18 +13,26 @@ export class LocationService {
     public positionUpdater: Subject<{ latitude: number, longitude: number }>;
     public position: Observable<{ latitude: number, longitude: number }>;
 
-    constructor() {
+    public lastPosition: Observable<{ latitude: number, longitude: number }>;
+
+    constructor(private storage: Storage) {
+        this.lastPosition = this.getLastPosition();
+
         this.positionUpdater = new Subject<{ latitude: number, longitude: number }>();
-        this.position = this.positionUpdater
-            .publishBehavior({
-                latitude: 48.866667,
-                longitude: 2.333333
-            }).refCount();
+        this.position = this.lastPosition.flatMap(lastPosition => {
+            return this.positionUpdater
+                .publishBehavior({
+                    latitude: lastPosition.latitude,
+                    longitude: lastPosition.longitude
+                }).refCount();
+        });
+        this.positionUpdater.subscribe(value => {
+            this.saveLastPosition(value);
+        });
 
         setTimeout(() => {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((position) => {
-                    // alert(position.coords.latitude + '|' + position.coords.longitude);
                     this.positionUpdater.next({
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude
@@ -34,6 +44,20 @@ export class LocationService {
         }, 1000);
     }
 
+    public getLastPosition(): Observable<{ latitude: number, longitude: number }> {
+        return Observable.fromPromise(this.storage.get('lastLocation').then((result: { latitude: number, longitude: number }) => {
+            if (result) {
+                return result;
+            }
+            return {
+                latitude: 48.866667,
+                longitude: 2.333333
+            };
+        }));
+    }
+    public saveLastPosition(value: { latitude: number, longitude: number }) {
+        this.storage.set('lastLocation', value);
+    }
     public error(err?) {
         alert('Désolé, nous ne pouvons pas récupérer votre position: ' + err);
     }
