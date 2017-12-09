@@ -29,7 +29,7 @@
           <ion-badge item-end color="primary" *ngIf="(bar|async)?.schedule.isOpenNow|async">Ouvert</ion-badge>
           <ion-badge item-end color="danger" *ngIf="!((bar|async)?.schedule.isOpenNow|async)">Fermé</ion-badge>
         </ion-list-header>
-        <ion-item *ngFor="let day of (bar|async)?.schedule.openingTimes" [color]="(day.isToday|async) ? 'primary' : ''">
+        <ion-item *ngFor="let day of (bar|async)?.schedule.days" [color]="(day.isToday|async) ? 'primary' : ''">
           <span item-start>{{day.label}}</span>
           <span item-end>{{day.hoursFormat}}</span>
         </ion-item>

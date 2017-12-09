@@ -3,6 +3,7 @@ import { Observable } from "rxjs/Observable";
 import 'rxjs/add/observable/interval';
 import 'rxjs/add/operator/startWith';
 import { DayOfWeek } from "../models/bar.model";
+import moment from 'moment';
 
 @Injectable()
 export class TimeService {
@@ -10,7 +11,10 @@ export class TimeService {
     public day: Observable<DayOfWeek>;
 
     constructor() {
-        this.time = Observable.interval(5000).map(i => new Date()).startWith(new Date());
+        this.time = Observable.interval(5000)
+            .map(i => new Date())
+            .share()
+            .publishBehavior(new Date()).refCount();
         this.day = this.time.map(t => t.getDay() as DayOfWeek);
     }
 }

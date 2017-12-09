@@ -36,13 +36,13 @@ export class BarModel {
             model.latitude = parseFloat((data.Latitude as string).replace(',', '.'));
             model.longitude = parseFloat((data.Longitude as string).replace(',', '.'));
 
-            model.schedule.addOpeningTime(data.Lundi, DayOfWeek.Monday);
-            model.schedule.addOpeningTime(data.Mardi, DayOfWeek.Tuesday);
-            model.schedule.addOpeningTime(data.Mercredi, DayOfWeek.Wednesday);
-            model.schedule.addOpeningTime(data.Jeudi, DayOfWeek.Thursday);
-            model.schedule.addOpeningTime(data.Vendredi, DayOfWeek.Friday);
-            model.schedule.addOpeningTime(data.Samedi, DayOfWeek.Saturday);
-            model.schedule.addOpeningTime(data.Dimanche, DayOfWeek.Sunday);
+            model.schedule.addDay(data.Lundi, DayOfWeek.Monday);
+            model.schedule.addDay(data.Mardi, DayOfWeek.Tuesday);
+            model.schedule.addDay(data.Mercredi, DayOfWeek.Wednesday);
+            model.schedule.addDay(data.Jeudi, DayOfWeek.Thursday);
+            model.schedule.addDay(data.Vendredi, DayOfWeek.Friday);
+            model.schedule.addDay(data.Samedi, DayOfWeek.Saturday);
+            model.schedule.addDay(data.Dimanche, DayOfWeek.Sunday);
 
             model.distance = locationService.getDistance(model);
             model.time = model.distance.map(distance => distance / 4 * 60);
@@ -91,53 +91,45 @@ function getDayOfWeekLabel(value: DayOfWeek) {
 }
 
 export class ScheduleModel {
-    public openingTimes: DayModel[];
+    public days: DayModel[];
     public isOpen: Observable<boolean>;
 
     constructor(private timeService: TimeService) {
-        this.openingTimes = new Array<DayModel>();
+        this.days = new Array<DayModel>();
     }
 
-    public addOpeningTime(data, dayOfWeek) {
-        this.openingTimes.push(DayModel.from(data, dayOfWeek, this.timeService));
+    public addDay(data, dayOfWeek) {
+        this.days.push(DayModel.from(data, dayOfWeek, this.timeService));
     }
 
     public get monday(): DayModel {
-        return this.openingTimes.find(d => d.dayOfWeek == DayOfWeek.Monday);
+        return this.days.find(d => d.dayOfWeek == DayOfWeek.Monday);
     }
     public get tuesday(): DayModel {
-        return this.openingTimes.find(d => d.dayOfWeek == DayOfWeek.Tuesday);
+        return this.days.find(d => d.dayOfWeek == DayOfWeek.Tuesday);
     }
     public get wednesday(): DayModel {
-        return this.openingTimes.find(d => d.dayOfWeek == DayOfWeek.Wednesday);
+        return this.days.find(d => d.dayOfWeek == DayOfWeek.Wednesday);
     }
     public get thursday(): DayModel {
-        return this.openingTimes.find(d => d.dayOfWeek == DayOfWeek.Thursday);
+        return this.days.find(d => d.dayOfWeek == DayOfWeek.Thursday);
     }
     public get friday(): DayModel {
-        return this.openingTimes.find(d => d.dayOfWeek == DayOfWeek.Friday);
+        return this.days.find(d => d.dayOfWeek == DayOfWeek.Friday);
     }
     public get saturday(): DayModel {
-        return this.openingTimes.find(d => d.dayOfWeek == DayOfWeek.Saturday);
+        return this.days.find(d => d.dayOfWeek == DayOfWeek.Saturday);
     }
     public get sunday(): DayModel {
-        return this.openingTimes.find(d => d.dayOfWeek == DayOfWeek.Sunday);
+        return this.days.find(d => d.dayOfWeek == DayOfWeek.Sunday);
     }
 
     public get isOpenNow(): Observable<boolean> {
-        return this.timeService.time.map(now => {
-            const schedule: DayModel = this.openingTimes.find(ot => ot.dayOfWeek == now.getDay());
-
-            // bar is closed
-            if (schedule == null)
-                return false;
+        return this.timeService.time.flatMap(now => {
+            const day: DayModel = this.days.find(ot => ot.dayOfWeek == now.getDay());
 
             // bar is open
-            if (schedule.workingHours.filter(h => h.getIsInInterval(now)).length > 0)
-                return true;
-
-            // bar is not open yet
-            return false;
+            return day.isOpen;
         });
     }
 }
@@ -200,6 +192,6 @@ export class WorkingHoursModel {
             this.endTime = this.endTime.add(1, 'day');
     }
     public getIsInInterval(time: Date): boolean {
-        return moment(moment(time).format('HH:mm'), ["HH:mm"]).isBetween(this.startTime, this.endTime);
+        return moment(moment(time).format('HH:mm'), ["HH:mm"]).isBetween(this.startTime, this.endTime, null, '[]');
     }
 }
