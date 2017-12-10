@@ -33,7 +33,9 @@ export class LocationService {
         this.getPosition();
     }
 
+    private lastGetPositionCallback: () => void;
     public getPosition(callback?: () => void) {
+        this.lastGetPositionCallback = callback;
         setTimeout(() => {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((position) => {
@@ -41,8 +43,8 @@ export class LocationService {
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude
                     });
-                    if (callback) {
-                        callback();
+                    if (this.lastGetPositionCallback) {
+                        this.lastGetPositionCallback();
                     }
                 }, this.error);
             } else {
@@ -50,6 +52,13 @@ export class LocationService {
             }
         }, 1000);
     }
+    public error(err?) {
+        if (this.lastGetPositionCallback) {
+            this.lastGetPositionCallback();
+        }
+        alert('Désolé, nous ne pouvons pas récupérer votre position: ' + err);
+    }
+
     public getLastPosition(): Observable<{ latitude: number, longitude: number }> {
         return Observable.fromPromise(this.storage.get('lastLocation').then((result: { latitude: number, longitude: number }) => {
             if (result) {
@@ -63,9 +72,6 @@ export class LocationService {
     }
     public saveLastPosition(value: { latitude: number, longitude: number }) {
         this.storage.set('lastLocation', value);
-    }
-    public error(err?) {
-        alert('Désolé, nous ne pouvons pas récupérer votre position: ' + err);
     }
 
     public getDistance(bar: BarModel): Observable<number> {
