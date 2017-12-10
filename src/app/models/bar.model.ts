@@ -89,6 +89,24 @@ function getDayOfWeekLabel(value: DayOfWeek) {
             return 'Dimanche';
     }
 }
+function getDayOfWeekFromDay(value: number) {
+    switch (value) {
+        case 0:
+            return DayOfWeek.Sunday;
+        case 1:
+            return DayOfWeek.Monday;
+        case 2:
+            return DayOfWeek.Tuesday;
+        case 3:
+            return DayOfWeek.Wednesday;
+        case 4:
+            return DayOfWeek.Thursday;
+        case 5:
+            return DayOfWeek.Friday;
+        case 6:
+            return DayOfWeek.Saturday;
+    }
+}
 
 export class ScheduleModel {
     public days: DayModel[];
@@ -126,7 +144,7 @@ export class ScheduleModel {
 
     public get isOpenNow(): Observable<boolean> {
         return this.timeService.time.flatMap(now => {
-            const day: DayModel = this.days.find(ot => ot.dayOfWeek == now.getDay());
+            const day: DayModel = this.days.find(ot => ot.dayOfWeek == getDayOfWeekFromDay(now.getDay()));
 
             // bar is open
             return day.isOpen;
