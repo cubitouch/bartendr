@@ -13,6 +13,9 @@
   </ion-navbar>
 </ion-header>
 <ion-content class="card-background-page">
+  <ion-refresher (ionRefresh)="refreshPosition($event)" [enabled]="!isModeMap">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <div *ngIf="isModeMap">
     <agm-map [styles]="mapStyles" [fitBounds]="mapBounds | async">
       <agm-marker [latitude]="(position | async).latitude" [longitude]="(position | async).longitude" [iconUrl]="'http://mt.google.com/vt/icon?color=ff004C13&name=icons/spotlight/spotlight-waypoint-blue.png'"></agm-marker>

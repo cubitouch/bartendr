@@ -43,6 +43,9 @@ export class HomePage implements OnInit {
     this.isModeMap = false;
   }
 
+  public refreshPosition(refresher) {
+    this.locationService.getPosition(() => refresher.complete());
+  }
   public safeUrl(value: string): SafeStyle {
     return this.sanitization.bypassSecurityTrustStyle('linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ), url(' + value + ')');
   }

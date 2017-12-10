@@ -30,6 +30,10 @@ export class LocationService {
             this.saveLastPosition(value);
         });
 
+        this.getPosition();
+    }
+
+    public getPosition(callback?: () => void) {
         setTimeout(() => {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((position) => {
@@ -37,13 +41,15 @@ export class LocationService {
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude
                     });
+                    if (callback) {
+                        callback();
+                    }
                 }, this.error);
             } else {
                 this.error();
             }
         }, 1000);
     }
-
     public getLastPosition(): Observable<{ latitude: number, longitude: number }> {
         return Observable.fromPromise(this.storage.get('lastLocation').then((result: { latitude: number, longitude: number }) => {
             if (result) {
