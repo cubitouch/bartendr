@@ -14,8 +14,8 @@ export class BarModel {
     public adress: string;
     public latitude: number;
     public longitude: number;
-    public distance: Observable<number>;
-    public time: Observable<number>;
+    public distance: number;
+    public time: number;
 
     public schedule: ScheduleModel;
 
@@ -23,7 +23,7 @@ export class BarModel {
         this.schedule = new ScheduleModel(timeService);
     }
 
-    public static from(data: any, locationService: LocationService, timeService: TimeService): BarModel {
+    public static from(data: any, locationService: LocationService, position: { latitude: number, longitude: number }, timeService: TimeService): BarModel {
         const model = new BarModel(timeService);
 
         if (data) {
@@ -44,18 +44,18 @@ export class BarModel {
             model.schedule.addDay(data.Samedi, DayOfWeek.Saturday);
             model.schedule.addDay(data.Dimanche, DayOfWeek.Sunday);
 
-            model.distance = locationService.getDistance(model);
-            model.time = model.distance.map(distance => distance / 4 * 60);
+            model.distance = locationService.getDistance(model, position);
+            model.time = model.distance / 4 * 60;
         }
 
         return model;
     }
 
-    public static fromList(data: any[], locationService: LocationService, timeService: TimeService): BarModel[] {
+    public static fromList(data: any[], locationService: LocationService, position: { latitude: number, longitude: number }, timeService: TimeService): BarModel[] {
         const models = new Array<BarModel>();
 
         if (data) {
-            data.forEach(item => models.push(BarModel.from(item, locationService, timeService)));
+            data.forEach(item => models.push(BarModel.from(item, locationService, position, timeService)));
         }
 
         return models;

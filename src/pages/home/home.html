@@ -16,19 +16,19 @@
   <ion-refresher (ionRefresh)="refreshPosition($event)" [enabled]="!isModeMap">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <div *ngIf="isModeMap">
-    <agm-map [styles]="mapStyles" [fitBounds]="mapBounds | async">
-      <agm-marker [latitude]="(position | async).latitude" [longitude]="(position | async).longitude" [iconUrl]="'http://mt.google.com/vt/icon?color=ff004C13&name=icons/spotlight/spotlight-waypoint-blue.png'"></agm-marker>
+  <div [style.display]="isModeMap ? 'inherit' : 'none'">
+    <agm-map [styles]="mapStyles" [fitBounds]="mapBounds | async" [zoom]="14" [latitude]="(position | async)?.latitude" [longitude]="(position | async)?.longitude">
+      <agm-marker [latitude]="(position | async)?.latitude" [longitude]="(position | async)?.longitude" [iconUrl]="'http://mt.google.com/vt/icon?color=ff004C13&name=icons/spotlight/spotlight-waypoint-blue.png'"></agm-marker>
       <agm-marker-cluster imagePath="https://raw.githubusercontent.com/googlemaps/v3-utility-library/master/markerclustererplus/images/m">
         <agm-marker *ngFor="let bar of bars | async" [latitude]="bar.latitude" [longitude]="bar.longitude" (markerClick)="openBarPage(bar.id)"></agm-marker>
       </agm-marker-cluster>
     </agm-map>
   </div>
-  <div *ngIf="!isModeMap">
-    <ion-card *ngFor="let bar of barsDisplayed | async" [style.background-image]="safeUrl(bar.picture)" (click)="openBarPage(bar.id)">
+  <div [style.display]="!isModeMap ? 'inherit' : 'none'">
+    <ion-card *ngFor="let bar of (barsDisplayed | async)" [style.background-image]="safeUrl(bar.picture)" (click)="openBarPage(bar.id)">
       <div class="card-title">{{bar.name}}</div>
       <div class="card-subtitle">
-        {{bar.distance | async | number:'1.1-1'}} km - {{bar.time | async | number:'1.1-1'}} minutes
+        {{(bar.distance) | number:'1.1-1'}} km - {{(bar.time) | number:'1.0-0'}} minutes
         <ion-badge item-end color="primary" *ngIf="bar.schedule.isOpenNow|async">Ouvert</ion-badge>
         <ion-badge item-end color="danger" *ngIf="!(bar.schedule.isOpenNow|async)">Fermé</ion-badge>
       </div>

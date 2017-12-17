@@ -30,33 +30,32 @@ export class LocationService {
             this.saveLastPosition(value);
         });
 
-        this.getPosition();
+        setTimeout(() => { this.getPosition(); }, 2000);
     }
 
     private lastGetPositionCallback: () => void;
     public getPosition(callback?: () => void) {
         this.lastGetPositionCallback = callback;
-        setTimeout(() => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((position) => {
-                    this.positionUpdater.next({
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude
-                    });
-                    if (this.lastGetPositionCallback) {
-                        this.lastGetPositionCallback();
-                    }
-                }, this.error);
-            } else {
-                this.error();
-            }
-        }, 1000);
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                this.positionUpdater.next({
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                });
+                if (this.lastGetPositionCallback) {
+                    this.lastGetPositionCallback();
+                }
+            }, () => { this.error(); });
+        } else {
+            this.error();
+        }
     }
     public error(err?) {
         if (this.lastGetPositionCallback) {
             this.lastGetPositionCallback();
         }
-        alert('Désolé, nous ne pouvons pas récupérer votre position: ' + err);
+        alert('Désolé, nous ne pouvons pas récupérer votre position');
     }
 
     public getLastPosition(): Observable<{ latitude: number, longitude: number }> {
@@ -74,13 +73,13 @@ export class LocationService {
         this.storage.set('lastLocation', value);
     }
 
-    public getDistance(bar: BarModel): Observable<number> {
-        return this.position.map(position => distanceInKmBetweenEarthCoordinates(
+    public getDistance(bar: BarModel, position: { latitude: number, longitude: number }): number {
+        return distanceInKmBetweenEarthCoordinates(
             bar.latitude,
             bar.longitude,
             position.latitude,
             position.longitude
-        ));
+        );
     }
 
 }
