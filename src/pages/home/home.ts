@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
-import { NavController } from 'ionic-angular';
+import { NavController, LoadingController, ModalController } from 'ionic-angular';
 import { LatLngBoundsLiteral, AgmMap } from '@agm/core';
 
 import { Observable } from 'rxjs/Observable';
@@ -12,11 +12,14 @@ import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/withLatestFrom';
+import 'rxjs/add/operator/combineLatest';
 import 'rxjs/add/observable/combineLatest';
 import { BarModel } from '../../app/models/bar.model';
 import { BarPage } from '../bar/bar';
 import { BarRepository } from '../../app/services/bars.repository';
 import { LocationService } from '../../app/services/location.service';
+import { FiltersService } from '../../app/services/filters.service';
+import { FiltersPage } from './filters';
 
 @Component({
   selector: 'page-home',
@@ -39,16 +42,34 @@ export class HomePage implements OnInit {
   public mapBounds: Observable<LatLngBoundsLiteral>;
 
   constructor(public navCtrl: NavController,
+    public loadingCtrl: LoadingController,
+    public modalCtrl: ModalController,
     private barsRepository: BarRepository,
     private locationService: LocationService,
+    private filtersService: FiltersService,
     private sanitization: DomSanitizer) {
     this.isModeMap = false;
   }
 
   public refreshPosition(refresher) {
-    this.locationService.getPosition(() => {
-      refresher.complete();
-    });
+    if (refresher) {
+      this.locationService.getPosition(() => {
+        refresher.complete();
+      });
+    } else {
+      let loader = this.loadingCtrl.create({
+        content: "Localisation en cours...",
+        duration: 500
+      });
+      loader.present();
+      this.locationService.getPosition(() => {
+        loader.dismiss();
+      });
+    }
+  }
+  public openFilters() {
+    const filters = this.modalCtrl.create(FiltersPage);
+    filters.present();
   }
   public safeUrl(value: string): SafeStyle {
     return this.sanitization.bypassSecurityTrustStyle('linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ), url(' + value + ')');
@@ -77,7 +98,15 @@ export class HomePage implements OnInit {
     this.position.subscribe(position => {
       this.mapWasResized = false;
     });
-    this.bars = this.barsRepository.bars;
+    this.bars = this.barsRepository.bars
+      .combineLatest(this.filtersService.filters)
+      .map(([bars, filters]) => bars.filter(bar => {
+        if (filters.openOnly) {
+          return bar.schedule.isOpenNow;
+        }
+        return true;
+      }))
+      .share();
 
     this.mapBounds = this.bars.map(bars => {
       const bounds = <LatLngBoundsLiteral>{
@@ -113,6 +142,10 @@ export class HomePage implements OnInit {
       .map(([bars, size]) => bars.slice(0, size));
     this.isLazyLoadingAvailable = Observable.combineLatest(this.bars, this.pageSize)
       .map(([bars, size]) => bars.length >= size);
+  }
+
+  public trackById(index, item) {
+    return item.id;
   }
 
 }

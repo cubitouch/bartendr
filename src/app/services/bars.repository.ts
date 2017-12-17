@@ -20,8 +20,9 @@ export class BarRepository {
     ) {
         this.bars = Observable.combineLatest(
             this.http.get('./assets/bars.json'),
-            this.locationService.position)
-            .map(([data, position]) => BarModel.fromList(data as any[], this.locationService, position, this.timeService))
+            this.locationService.position,
+            this.timeService.time)
+            .map(([data, position, now]) => BarModel.fromList(data as any[], this.locationService, position, now))
             .map(bars => bars.sort((a, b) => a.distance - b.distance))
             .shareReplay();
     }

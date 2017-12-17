@@ -1,0 +1,20 @@
+<ion-header>
+    <ion-navbar>
+        <ion-buttons start>
+            <button ion-button (click)="dismiss()">
+                <span ion-text color="primary" showWhen="ios">Fermer</span>
+                <ion-icon name="checkmark-circle-outline" showWhen="android,windows"></ion-icon>
+            </button>
+        </ion-buttons>
+        <ion-title>Filtres</ion-title>
+    </ion-navbar>
+</ion-header>
+<ion-content>
+    <ion-list>
+        <ion-item (click)="toggleOpenOnly()">
+            <ion-icon name="time" item-start></ion-icon>
+            <ion-label> Ouvert maintenant</ion-label>
+            <ion-toggle [(ngModel)]="filtersService.openOnly"></ion-toggle>
+        </ion-item>
+    </ion-list>
+</ion-content>

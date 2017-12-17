@@ -19,12 +19,13 @@ export class BarModel {
 
     public schedule: ScheduleModel;
 
-    constructor(private timeService: TimeService) {
-        this.schedule = new ScheduleModel(timeService);
+    constructor(private now: Date) {
+        this.schedule = new ScheduleModel(now);
     }
 
-    public static from(data: any, locationService: LocationService, position: { latitude: number, longitude: number }, timeService: TimeService): BarModel {
-        const model = new BarModel(timeService);
+    public static from(data: any, locationService: LocationService, position: { latitude: number, longitude: number }, now: Date): BarModel {
+        const model = new BarModel(now);
+
 
         if (data) {
             model.id = parseInt(data.Id);
@@ -51,11 +52,11 @@ export class BarModel {
         return model;
     }
 
-    public static fromList(data: any[], locationService: LocationService, position: { latitude: number, longitude: number }, timeService: TimeService): BarModel[] {
+    public static fromList(data: any[], locationService: LocationService, position: { latitude: number, longitude: number }, now: Date): BarModel[] {
         const models = new Array<BarModel>();
 
         if (data) {
-            data.forEach(item => models.push(BarModel.from(item, locationService, position, timeService)));
+            data.forEach(item => models.push(BarModel.from(item, locationService, position, now)));
         }
 
         return models;
@@ -110,14 +111,13 @@ function getDayOfWeekFromDay(value: number) {
 
 export class ScheduleModel {
     public days: DayModel[];
-    public isOpen: Observable<boolean>;
 
-    constructor(private timeService: TimeService) {
+    constructor(private now: Date) {
         this.days = new Array<DayModel>();
     }
 
     public addDay(data, dayOfWeek) {
-        this.days.push(DayModel.from(data, dayOfWeek, this.timeService));
+        this.days.push(DayModel.from(data, dayOfWeek, this.now));
     }
 
     public get monday(): DayModel {
@@ -142,21 +142,19 @@ export class ScheduleModel {
         return this.days.find(d => d.dayOfWeek == DayOfWeek.Sunday);
     }
 
-    public get isOpenNow(): Observable<boolean> {
-        return this.timeService.time.flatMap(now => {
-            const day: DayModel = this.days.find(ot => ot.dayOfWeek == getDayOfWeekFromDay(now.getDay()));
+    public get isOpenNow(): boolean {
+        const day: DayModel = this.days.find(ot => ot.dayOfWeek == getDayOfWeekFromDay(this.now.getDay()));
 
-            // bar is open
-            return day.isOpen;
-        });
+        // bar is open
+        return day.isOpen;
     }
 }
 
 export class DayModel {
     public dayOfWeek: DayOfWeek;
     public label: string;
-    public isOpen: Observable<boolean>;
-    public isToday: Observable<boolean>;
+    public isOpen: boolean;
+    public isToday: boolean;
     public workingHours: WorkingHoursModel[];
 
     public get hoursFormat(): string {
@@ -171,14 +169,14 @@ export class DayModel {
         });
         return format;
     }
-    public static from(data: string, dayOfWeek: DayOfWeek, timeService: TimeService): DayModel {
+    public static from(data: string, dayOfWeek: DayOfWeek, now: Date): DayModel {
         const model = new DayModel();
 
         model.dayOfWeek = dayOfWeek;
         model.label = getDayOfWeekLabel(dayOfWeek);
-        model.isOpen = timeService.time.map(now => model.workingHours.filter(h => h.getIsInInterval(now)).length > 0);
-        model.isToday = timeService.day.map(d => d == dayOfWeek);
         model.workingHours = model.extractHours(data);
+        model.isOpen = model.workingHours.filter(h => h.getIsInInterval(now)).length > 0;
+        model.isToday = now.getDay() == dayOfWeek;
 
         return model;
     }

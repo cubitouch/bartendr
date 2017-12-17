@@ -3,7 +3,6 @@ import { Observable } from "rxjs/Observable";
 import 'rxjs/add/observable/interval';
 import 'rxjs/add/operator/startWith';
 import { DayOfWeek } from "../models/bar.model";
-import moment from 'moment';
 
 @Injectable()
 export class TimeService {

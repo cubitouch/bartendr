@@ -18,11 +18,14 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { BarRepository } from './services/bars.repository';
 import { LocationService } from './services/location.service';
 import { TimeService } from './services/time.service';
+import { FiltersPage } from '../pages/home/filters';
+import { FiltersService } from './services/filters.service';
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
+    FiltersPage,
     AboutPage,
     BarPage
   ],
@@ -46,6 +49,7 @@ import { TimeService } from './services/time.service';
   entryComponents: [
     MyApp,
     HomePage,
+    FiltersPage,
     AboutPage,
     BarPage
   ],
@@ -55,7 +59,8 @@ import { TimeService } from './services/time.service';
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     BarRepository,
     LocationService,
-    TimeService
+    TimeService,
+    FiltersService
   ]
 })
 export class AppModule { }
