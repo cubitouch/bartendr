@@ -37,19 +37,21 @@ export class LocationService {
     public getPosition(callback?: () => void) {
         this.lastGetPositionCallback = callback;
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                this.positionUpdater.next({
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude
-                });
-                if (this.lastGetPositionCallback) {
-                    this.lastGetPositionCallback();
-                }
-            }, () => { this.error(); });
-        } else {
-            this.error();
-        }
+        setTimeout(() => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    this.positionUpdater.next({
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    });
+                    if (this.lastGetPositionCallback) {
+                        this.lastGetPositionCallback();
+                    }
+                }, () => { this.error(); });
+            } else {
+                this.error();
+            }
+        }, 500);
     }
     public error(err?) {
         if (this.lastGetPositionCallback) {

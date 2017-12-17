@@ -18,12 +18,14 @@ export class BarRepository {
         private locationService: LocationService,
         private timeService: TimeService,
     ) {
+        // todo optimize steps (deserialisation -> location -> time)
         this.bars = Observable.combineLatest(
             this.http.get('./assets/bars.json'),
             this.locationService.position,
             this.timeService.time)
             .map(([data, position, now]) => BarModel.fromList(data as any[], this.locationService, position, now))
             .map(bars => bars.sort((a, b) => a.distance - b.distance))
+            .do(value => console.log('recompute bars'))
             .shareReplay();
     }
 

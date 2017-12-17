@@ -1,10 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
+import { Component, OnInit } from '@angular/core';
 
-import { LatLngBoundsLiteral, AgmMap } from '@agm/core';
-
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/map';
 import { ViewController } from 'ionic-angular';
 import { FiltersService } from '../../app/services/filters.service';
 

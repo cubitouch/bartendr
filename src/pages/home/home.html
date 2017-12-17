@@ -30,7 +30,7 @@
     <agm-map [styles]="mapStyles" [fitBounds]="mapBounds | async" [zoom]="14" [latitude]="(position | async)?.latitude" [longitude]="(position | async)?.longitude">
       <agm-marker [latitude]="(position | async)?.latitude" [longitude]="(position | async)?.longitude" [iconUrl]="'http://mt.google.com/vt/icon?color=ff004C13&name=icons/spotlight/spotlight-waypoint-blue.png'"></agm-marker>
       <agm-marker-cluster imagePath="https://raw.githubusercontent.com/googlemaps/v3-utility-library/master/markerclustererplus/images/m">
-        <agm-marker *ngFor="let bar of bars | async" [latitude]="bar.latitude" [longitude]="bar.longitude" (markerClick)="openBarPage(bar.id)"></agm-marker>
+        <agm-marker *ngFor="let bar of bars | async;trackBy: trackById" [latitude]="bar.latitude" [longitude]="bar.longitude" (markerClick)="openBarPage(bar.id)"></agm-marker>
       </agm-marker-cluster>
     </agm-map>
   </div>

@@ -1,9 +1,7 @@
 
 
-import { Observable } from "rxjs/Observable";
 import moment from 'moment';
 import { LocationService } from '../services/location.service';
-import { TimeService } from "../services/time.service";
 
 export class BarModel {
     public id: number;
@@ -19,7 +17,7 @@ export class BarModel {
 
     public schedule: ScheduleModel;
 
-    constructor(private now: Date) {
+    constructor(now: Date) {
         this.schedule = new ScheduleModel(now);
     }
 

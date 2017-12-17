@@ -4,8 +4,6 @@ import { Subject } from "rxjs/Subject";
 import 'rxjs/add/observable/interval';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/publishBehavior';
-import { DayOfWeek } from "../models/bar.model";
-import moment from 'moment';
 
 @Injectable()
 export class FiltersService {
