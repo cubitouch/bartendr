@@ -58,8 +58,7 @@ export class HomePage implements OnInit {
       });
     } else {
       let loader = this.loadingCtrl.create({
-        content: "Localisation en cours...",
-        duration: 500
+        content: "Localisation en cours..."
       });
       loader.present();
       this.locationService.getPosition(() => {

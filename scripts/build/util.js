@@ -23,9 +23,9 @@ util.appendOrOverwriteHashJsValues = function (indexString, chunkName, hash) {
 }
 
 util.appendOrOverwriteHashCssValues = function (indexString, chunkName, hash) {
-    let match = '(<link href="build/' + chunkName + '.*.css" rel="stylesheet">)';
+    let match = '(<link href="build/' + chunkName + '.*.css" rel="stylesheet")';
     let regexp = indexString.match(match)[0];
-    const replace = '<link href="build/' + chunkName + '.' + hash + '.css" rel="stylesheet">';
+    const replace = '<link href="build/' + chunkName + '.' + hash + '.css" rel="stylesheet"';
     return indexString.replace(regexp, replace);
 }
 

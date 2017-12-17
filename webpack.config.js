@@ -12,7 +12,7 @@ if (process.env.IONIC_ENV === 'prod') {
     new IndexFileUpdaterPlugin()
   );
   webpackConfig.prod.plugins.push(
-    new BarPictureDowloader()
+    // new BarPictureDowloader()
   );
 }
 
