@@ -54,8 +54,8 @@
       <div class="card-title">{{bar.name}}</div>
       <div class="card-subtitle">
         {{(bar.distance) | number:'1.1-1'}} km - {{(bar.time) | number:'1.0-0'}} minutes
-        <ion-badge item-end color="primary" *ngIf="bar.schedule.isOpenNow">Ouvert</ion-badge>
-        <ion-badge item-end color="danger" *ngIf="!bar.schedule.isOpenNow">Fermé</ion-badge>
+        <ion-badge item-end color="primary" *ngIf="bar.schedule.getIsOpenNow(timeService.time|async)">Ouvert</ion-badge>
+        <ion-badge item-end color="danger" *ngIf="!bar.schedule.getIsOpenNow(timeService.time|async)">Fermé</ion-badge>
       </div>
     </ion-card>
     <ion-infinite-scroll (ionInfinite)="doInfinite($event)" [enabled]="isLazyLoadingAvailable | async">

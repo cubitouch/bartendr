@@ -8,6 +8,7 @@ import 'rxjs/add/operator/share';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/observable/of';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
+import { TimeService } from '../../app/services/time.service';
 
 @Component({
   selector: 'page-bar',
@@ -20,6 +21,7 @@ export class BarPage implements OnInit {
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
     private barsRepository: BarRepository,
+    public timeService: TimeService,
     private sanitization: DomSanitizer) {
     // this.bar = Observable.of(new BarModel());
   }

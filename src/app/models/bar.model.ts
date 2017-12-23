@@ -17,12 +17,12 @@ export class BarModel {
 
     public schedule: ScheduleModel;
 
-    constructor(now: Date) {
-        this.schedule = new ScheduleModel(now);
+    constructor() {
+        this.schedule = new ScheduleModel();
     }
 
-    public static from(data: any, locationService: LocationService, position: { latitude: number, longitude: number }, now: Date): BarModel {
-        const model = new BarModel(now);
+    public static from(data: any): BarModel {
+        const model = new BarModel();
 
 
         if (data) {
@@ -42,19 +42,27 @@ export class BarModel {
             model.schedule.addDay(data.Vendredi, DayOfWeek.Friday);
             model.schedule.addDay(data.Samedi, DayOfWeek.Saturday);
             model.schedule.addDay(data.Dimanche, DayOfWeek.Sunday);
-
-            model.distance = locationService.getDistance(model, position);
-            model.time = model.distance / 4 * 60;
+            if (data.Id == 3) {
+                console.log('bizzart', data, model.schedule);
+            }
         }
 
         return model;
     }
 
-    public static fromList(data: any[], locationService: LocationService, position: { latitude: number, longitude: number }, now: Date): BarModel[] {
+    public initPosition(locationService: LocationService, position: { latitude: number, longitude: number }) {
+        this.distance = locationService.getDistance(this, position);
+        this.time = this.distance / 4 * 60;
+    }
+    public initTime(time: Date) {
+        this.schedule.days.forEach(day => day.initTime(time));
+    }
+
+    public static fromList(data: any[]): BarModel[] {
         const models = new Array<BarModel>();
 
         if (data) {
-            data.forEach(item => models.push(BarModel.from(item, locationService, position, now)));
+            data.forEach(item => models.push(BarModel.from(item)));
         }
 
         return models;
@@ -110,12 +118,12 @@ function getDayOfWeekFromDay(value: number) {
 export class ScheduleModel {
     public days: DayModel[];
 
-    constructor(private now: Date) {
+    constructor() {
         this.days = new Array<DayModel>();
     }
 
     public addDay(data, dayOfWeek) {
-        this.days.push(DayModel.from(data, dayOfWeek, this.now));
+        this.days.push(DayModel.from(data, dayOfWeek));
     }
 
     public get monday(): DayModel {
@@ -140,8 +148,8 @@ export class ScheduleModel {
         return this.days.find(d => d.dayOfWeek == DayOfWeek.Sunday);
     }
 
-    public get isOpenNow(): boolean {
-        const day: DayModel = this.days.find(ot => ot.dayOfWeek == getDayOfWeekFromDay(this.now.getDay()));
+    public getIsOpenNow(now: Date): boolean {
+        const day: DayModel = this.days.find(ot => ot.dayOfWeek == getDayOfWeekFromDay(now.getDay()));
 
         // bar is open
         return day.isOpen;
@@ -167,16 +175,19 @@ export class DayModel {
         });
         return format;
     }
-    public static from(data: string, dayOfWeek: DayOfWeek, now: Date): DayModel {
+    public static from(data: string, dayOfWeek: DayOfWeek): DayModel {
         const model = new DayModel();
 
         model.dayOfWeek = dayOfWeek;
         model.label = getDayOfWeekLabel(dayOfWeek);
         model.workingHours = model.extractHours(data);
-        model.isOpen = model.workingHours.filter(h => h.getIsInInterval(now)).length > 0;
-        model.isToday = getDayOfWeekFromDay(now.getDay()) == dayOfWeek;
-        
+
         return model;
+    }
+
+    public initTime(now: Date) {
+        this.isOpen = this.workingHours.filter(h => h.getIsInInterval(now)).length > 0;
+        this.isToday = getDayOfWeekFromDay(now.getDay()) == this.dayOfWeek;
     }
 
     private extractHours(hours: string): WorkingHoursModel[] {

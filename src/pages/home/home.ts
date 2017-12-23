@@ -22,6 +22,7 @@ import { FiltersService } from '../../app/services/filters.service';
 import { FiltersPage } from './filters';
 import { MeetingPage } from './meeting';
 import { PlacesService } from '../../app/services/places.service';
+import { TimeService } from '../../app/services/time.service';
 
 @Component({
   selector: 'page-home',
@@ -30,7 +31,7 @@ import { PlacesService } from '../../app/services/places.service';
 export class HomePage implements OnInit {
   @ViewChild(AgmMap) public map: AgmMap;
 
-  public pageSizeDefault: number = 10;
+  public pageSizeDefault: number = 5;
   public isModeMap: boolean;
   public bars: Observable<BarModel[]>;
   public barsDisplayed: Observable<BarModel[]>;
@@ -50,6 +51,7 @@ export class HomePage implements OnInit {
     private locationService: LocationService,
     private filtersService: FiltersService,
     public placesService: PlacesService,
+    public timeService: TimeService,
     private sanitization: DomSanitizer) {
     this.isModeMap = false;
   }
@@ -115,10 +117,10 @@ export class HomePage implements OnInit {
       }
     });
     this.bars = this.barsRepository.bars
-      .combineLatest(this.filtersService.filters)
-      .map(([bars, filters]) => bars.filter(bar => {
+      .combineLatest(this.filtersService.filters, this.timeService.time)
+      .map(([bars, filters, time]) => bars.filter(bar => {
         if (filters.openOnly) {
-          return bar.schedule.isOpenNow;
+          return bar.schedule.getIsOpenNow(time);
         }
         return true;
       }))
