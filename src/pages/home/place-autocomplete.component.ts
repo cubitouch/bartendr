@@ -1,5 +1,4 @@
-import { Component, ElementRef, NgZone, OnInit, ViewChild, Input } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { Component, ElementRef, NgZone, OnInit, Input } from '@angular/core';
 import { MapsAPILoader } from '@agm/core';
 
 import { ViewController } from 'ionic-angular';

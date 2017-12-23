@@ -54,6 +54,7 @@ export class PlacesService {
     }
 }
 
+// https://stackoverflow.com/questions/28315027/calculation-of-center-point-from-list-of-latitude-and-longitude-are-slightly-dif
 function getCentralGeoCoordinate(geoCoordinates: PlaceModel[]): { latitude: number, longitude: number } {
     if (geoCoordinates.length == 1) {
         return { latitude: geoCoordinates[0].position.latitude, longitude: geoCoordinates[0].position.longitude };
