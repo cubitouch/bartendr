@@ -25,8 +25,6 @@ export class PlacesService {
                 : new Array<{ latitude: number, longitude: number }>())
             .publishBehavior(new Array<{ latitude: number, longitude: number }>()).refCount();
         this.clearPlaces();
-        
-        this.placesMidway.subscribe(value => console.log('placesMidway', value));
     }
 
     public addPlace() {
