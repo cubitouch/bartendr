@@ -1,11 +1,10 @@
 import { Component, ElementRef, NgZone, OnInit, ViewChild, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MapsAPILoader } from '@agm/core';
-import { } from 'googlemaps';
 
 import { ViewController } from 'ionic-angular';
 import { PlaceModel } from '../../app/services/places.service';
-
+declare var google: any;
 @Component({
   selector: 'place-autocomplete',
   templateUrl: 'place-autocomplete.component.html'
@@ -26,7 +25,7 @@ export class PlaceAutocompleteComponent implements OnInit {
     this.mapsAPILoader.load().then(() => {
       let search = document.querySelector('#search-' + this.place.id + ' input');
       search["value"] = this.place.adress;
-      let autocomplete = new (google || null).maps.places.Autocomplete(search, {
+      let autocomplete = new google.maps.places.Autocomplete(search, {
         types: ["address"]
       });
       autocomplete.addListener("place_changed", () => {

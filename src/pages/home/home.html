@@ -49,10 +49,6 @@
     </agm-map>
   </div>
   <div [style.display]="!isModeMap ? 'inherit' : 'none'">
-    <div>{{(position | async)?.latitude}} {{(position | async)?.longitude}}</div>
-    <div *ngFor="let place of placesService.placesMidway | async">
-      {{place.latitude}} {{place.longitude}}
-    </div>
     <ion-card *ngFor="let bar of (barsDisplayed | async);trackBy: trackById" [style.background-image]="safeUrl(bar.picture)"
       (click)="openBarPage(bar.id)">
       <div class="card-title">{{bar.name}}</div>
