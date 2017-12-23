@@ -1,4 +1,8 @@
 page-bar {
+    .header-md::after {
+        background: none;
+    }
+
     .toolbar-background {
         background: none;
         border: none !important;

@@ -20,6 +20,8 @@ import { BarRepository } from '../../app/services/bars.repository';
 import { LocationService } from '../../app/services/location.service';
 import { FiltersService } from '../../app/services/filters.service';
 import { FiltersPage } from './filters';
+import { MeetingPage } from './meeting';
+import { PlacesService } from '../../app/services/places.service';
 
 @Component({
   selector: 'page-home',
@@ -47,6 +49,7 @@ export class HomePage implements OnInit {
     private barsRepository: BarRepository,
     private locationService: LocationService,
     private filtersService: FiltersService,
+    public placesService: PlacesService,
     private sanitization: DomSanitizer) {
     this.isModeMap = false;
   }
@@ -70,6 +73,12 @@ export class HomePage implements OnInit {
     const filters = this.modalCtrl.create(FiltersPage);
     filters.present();
   }
+
+  public openMeeting() {
+    const meeting = this.modalCtrl.create(MeetingPage);
+    meeting.present();
+  }
+
   public safeUrl(value: string): SafeStyle {
     return this.sanitization.bypassSecurityTrustStyle('linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ), url(' + value + ')');
   }
@@ -93,9 +102,17 @@ export class HomePage implements OnInit {
     infiniteScroll.complete();
   }
   ngOnInit() {
-    this.position = this.locationService.position;
+    this.position = this.locationService.position
+      .combineLatest(this.placesService.placeMidway)
+      .do(value => console.log('value', value))
+      .map(([position, midway]) => midway || position)
+      .do(value => console.log('position', value));
     this.position.subscribe(position => {
       this.mapWasResized = false;
+    });
+    this.placesService.placeMidway.subscribe(position => {
+      this.isModeMap = false;
+      this.toggleMapDisplay();
     });
     this.bars = this.barsRepository.bars
       .combineLatest(this.filtersService.filters)

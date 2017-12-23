@@ -19,14 +19,19 @@ import { LocationService } from './services/location.service';
 import { TimeService } from './services/time.service';
 import { FiltersPage } from '../pages/home/filters';
 import { FiltersService } from './services/filters.service';
+import { MeetingPage } from '../pages/home/meeting';
+import { PlaceAutocompleteComponent } from '../pages/home/place-autocomplete.component';
+import { PlacesService } from './services/places.service';
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
     FiltersPage,
+    MeetingPage,
     AboutPage,
-    BarPage
+    BarPage,
+    PlaceAutocompleteComponent
   ],
   imports: [
     BrowserModule,
@@ -40,7 +45,8 @@ import { FiltersService } from './services/filters.service';
     }),
     IonicStorageModule.forRoot(),
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyD61F5jFB_8ql02dWz6ql73Ve076nTEuQE'
+      apiKey: 'AIzaSyD61F5jFB_8ql02dWz6ql73Ve076nTEuQE',
+      libraries: ["places"]
     }),
     AgmJsMarkerClustererModule
   ],
@@ -49,8 +55,10 @@ import { FiltersService } from './services/filters.service';
     MyApp,
     HomePage,
     FiltersPage,
+    MeetingPage,
     AboutPage,
-    BarPage
+    BarPage,
+    PlaceAutocompleteComponent
   ],
   providers: [
     StatusBar,
@@ -59,7 +67,8 @@ import { FiltersService } from './services/filters.service';
     BarRepository,
     LocationService,
     TimeService,
-    FiltersService
+    FiltersService,
+    PlacesService
   ]
 })
 export class AppModule { }

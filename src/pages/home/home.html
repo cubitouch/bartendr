@@ -23,6 +23,12 @@
       <ion-icon name="pin"></ion-icon>
     </button>
   </ion-fab>
+  <ion-fab bottom center>
+    <button ion-fab (click)="openMeeting()">
+      <ion-icon name="people"></ion-icon>
+      <ion-badge id="meeting-badge" *ngIf="placesService?.placesAquired.length > 1">{{placesService?.placesAquired.length}}</ion-badge>
+    </button>
+  </ion-fab>
   <ion-refresher (ionRefresh)="refreshPosition($event)" [enabled]="!isModeMap">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
@@ -35,7 +41,8 @@
     </agm-map>
   </div>
   <div [style.display]="!isModeMap ? 'inherit' : 'none'">
-    <ion-card *ngFor="let bar of (barsDisplayed | async);trackBy: trackById" [style.background-image]="safeUrl(bar.picture)" (click)="openBarPage(bar.id)">
+    <ion-card *ngFor="let bar of (barsDisplayed | async);trackBy: trackById" [style.background-image]="safeUrl(bar.picture)"
+      (click)="openBarPage(bar.id)">
       <div class="card-title">{{bar.name}}</div>
       <div class="card-subtitle">
         {{(bar.distance) | number:'1.1-1'}} km - {{(bar.time) | number:'1.0-0'}} minutes

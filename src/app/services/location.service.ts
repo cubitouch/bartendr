@@ -5,8 +5,10 @@ import 'rxjs/add/operator/shareReplay';
 import 'rxjs/add/operator/publishBehavior';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/observable/fromPromise';
+import { AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { BarModel } from "../models/bar.model";
+import { PlacesService } from "./places.service";
 
 @Injectable()
 export class LocationService {
@@ -15,7 +17,8 @@ export class LocationService {
 
     public lastPosition: Observable<{ latitude: number, longitude: number }>;
 
-    constructor(private storage: Storage) {
+    constructor(private storage: Storage, private alertCtrl: AlertController,
+        private placesService: PlacesService) {
         this.lastPosition = this.getLastPosition();
 
         this.positionUpdater = new Subject<{ latitude: number, longitude: number }>();
@@ -25,7 +28,9 @@ export class LocationService {
                     latitude: lastPosition.latitude,
                     longitude: lastPosition.longitude
                 }).refCount();
-        });
+        })
+            .combineLatest(this.placesService.placeMidway)
+            .map(([position, positionMidway]) => positionMidway || position);
         this.positionUpdater.subscribe(value => {
             this.saveLastPosition(value);
         });
@@ -57,7 +62,12 @@ export class LocationService {
         if (this.lastGetPositionCallback) {
             this.lastGetPositionCallback();
         }
-        alert('Désolé, nous ne pouvons pas récupérer votre position');
+        let alert = this.alertCtrl.create({
+            title: 'Désolé',
+            subTitle: 'Nous ne pouvons pas récupérer votre position pour le moment',
+            buttons: ['Ok']
+        });
+        alert.present();
     }
 
     public getLastPosition(): Observable<{ latitude: number, longitude: number }> {

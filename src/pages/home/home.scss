@@ -33,4 +33,18 @@ page-home {
         agm-map {
             height: calc(100vh - 56px);
         }
+
+        #meeting-badge {
+          position: absolute;
+          top: 0px;
+          right: 0px;
+       }
+      .fab {
+        overflow: inherit;
+        ion-badge {
+          background:  Black;
+          border-radius: 12px;
+          padding: 8px;
+        }
+      }
 }

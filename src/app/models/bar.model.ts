@@ -174,8 +174,8 @@ export class DayModel {
         model.label = getDayOfWeekLabel(dayOfWeek);
         model.workingHours = model.extractHours(data);
         model.isOpen = model.workingHours.filter(h => h.getIsInInterval(now)).length > 0;
-        model.isToday = now.getDay() == dayOfWeek;
-
+        model.isToday = getDayOfWeekFromDay(now.getDay()) == dayOfWeek;
+        
         return model;
     }
 
