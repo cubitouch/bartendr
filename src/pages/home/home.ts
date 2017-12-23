@@ -104,15 +104,15 @@ export class HomePage implements OnInit {
   ngOnInit() {
     this.position = this.locationService.position
       .combineLatest(this.placesService.placeMidway)
-      .do(value => console.log('value', value))
-      .map(([position, midway]) => midway || position)
-      .do(value => console.log('position', value));
+      .map(([position, midway]) => midway || position);
     this.position.subscribe(position => {
       this.mapWasResized = false;
     });
     this.placesService.placeMidway.subscribe(position => {
-      this.isModeMap = false;
-      this.toggleMapDisplay();
+      if (position) {
+        this.isModeMap = false;
+        this.toggleMapDisplay();
+      }
     });
     this.bars = this.barsRepository.bars
       .combineLatest(this.filtersService.filters)

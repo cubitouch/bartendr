@@ -49,6 +49,7 @@ export class LocationService {
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude
                     });
+                    this.placesService.clearPlaces();
                     if (this.lastGetPositionCallback) {
                         this.lastGetPositionCallback();
                     }

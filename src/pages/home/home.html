@@ -19,12 +19,12 @@
     </button>
   </ion-fab>
   <ion-fab bottom left>
-    <button ion-fab (click)="refreshPosition()">
+    <button ion-fab (click)="refreshPosition()" [color]="placesService?.placesAquired.length < 1 ? 'danger' : 'primary'">
       <ion-icon name="pin"></ion-icon>
     </button>
   </ion-fab>
   <ion-fab bottom center>
-    <button ion-fab (click)="openMeeting()">
+    <button ion-fab (click)="openMeeting()" [color]="placesService?.placesAquired.length > 1 ? 'danger' : 'primary'">
       <ion-icon name="people"></ion-icon>
       <ion-badge id="meeting-badge" *ngIf="placesService?.placesAquired.length > 1">{{placesService?.placesAquired.length}}</ion-badge>
     </button>
@@ -35,12 +35,24 @@
   <div [style.display]="isModeMap ? 'inherit' : 'none'">
     <agm-map [styles]="mapStyles" [fitBounds]="mapBounds | async" [zoom]="14" [latitude]="(position | async)?.latitude" [longitude]="(position | async)?.longitude">
       <agm-marker [latitude]="(position | async)?.latitude" [longitude]="(position | async)?.longitude" [iconUrl]="'http://mt.google.com/vt/icon?color=ff004C13&name=icons/spotlight/spotlight-waypoint-blue.png'"></agm-marker>
+      <agm-marker *ngFor="let place of placesService.placesMidway | async" [latitude]="place.latitude" [longitude]="place.longitude"
+        [iconUrl]="'https://mt.google.com/vt/icon?psize=30&font=fonts/arialuni_t.ttf&color=ff304C13&name=icons/spotlight/spotlight-waypoint-a.png&ax=43&ay=48&text=%E2%80%A2'"></agm-marker>
+      <agm-polyline [strokeWeight]="4" [strokeColor]="'#FF4081'" [strokeOpacity]="0.8">
+        <ng-container *ngFor="let place of placesService.placesMidway | async">
+          <agm-polyline-point [latitude]="(position | async)?.latitude" [longitude]="(position | async)?.longitude"></agm-polyline-point>
+          <agm-polyline-point [latitude]="place.latitude" [longitude]="place.longitude"></agm-polyline-point>
+        </ng-container>
+      </agm-polyline>
       <agm-marker-cluster imagePath="https://raw.githubusercontent.com/googlemaps/v3-utility-library/master/markerclustererplus/images/m">
         <agm-marker *ngFor="let bar of bars | async;trackBy: trackById" [latitude]="bar.latitude" [longitude]="bar.longitude" (markerClick)="openBarPage(bar.id)"></agm-marker>
       </agm-marker-cluster>
     </agm-map>
   </div>
   <div [style.display]="!isModeMap ? 'inherit' : 'none'">
+    <div>{{(position | async)?.latitude}} {{(position | async)?.longitude}}</div>
+    <div *ngFor="let place of placesService.placesMidway | async">
+      {{place.latitude}} {{place.longitude}}
+    </div>
     <ion-card *ngFor="let bar of (barsDisplayed | async);trackBy: trackById" [style.background-image]="safeUrl(bar.picture)"
       (click)="openBarPage(bar.id)">
       <div class="card-title">{{bar.name}}</div>

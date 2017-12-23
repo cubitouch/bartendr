@@ -1,6 +1,7 @@
 import { Component, ElementRef, NgZone, OnInit, ViewChild, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MapsAPILoader } from '@agm/core';
+import { } from 'googlemaps';
 
 import { ViewController } from 'ionic-angular';
 import { PlaceModel } from '../../app/services/places.service';
@@ -22,17 +23,16 @@ export class PlaceAutocompleteComponent implements OnInit {
   }
 
   public handlePlacesAutocomplete() {
-    console.log('this.place',this.place);
     this.mapsAPILoader.load().then(() => {
       let search = document.querySelector('#search-' + this.place.id + ' input');
-      search.value = this.place.adress;
-      let autocomplete = new google.maps.places.Autocomplete(search, {
+      search["value"] = this.place.adress;
+      let autocomplete = new (google || null).maps.places.Autocomplete(search, {
         types: ["address"]
       });
       autocomplete.addListener("place_changed", () => {
         this.ngZone.run(() => {
           //get the place result
-          let place: google.maps.places.PlaceResult = autocomplete.getPlace();
+          let place = autocomplete.getPlace();
 
           //verify result
           if (place.geometry === undefined || place.geometry === null) {
@@ -40,7 +40,7 @@ export class PlaceAutocompleteComponent implements OnInit {
           }
 
           //set latitude, longitude and zoom
-          this.setPosition(search.value, place.geometry.location.lat(), place.geometry.location.lng());
+          this.setPosition(search["value"], place.geometry.location.lat(), place.geometry.location.lng());
         });
       });
     });

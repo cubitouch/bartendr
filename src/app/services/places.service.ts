@@ -10,6 +10,7 @@ export class PlacesService {
         return this.places.filter(place => place.isAquired);
     };
     public placeMidway: Observable<{ latitude: number, longitude: number }>;
+    public placesMidway: Observable<{ latitude: number, longitude: number }[]>;
     public placesChangedMidway: Subject<PlaceModel[]>;
 
     constructor() {
@@ -17,7 +18,15 @@ export class PlacesService {
         this.placeMidway = this.placesChangedMidway
             .map(places => places && this.isAquired() ? getCentralGeoCoordinate(places) : null)
             .publishBehavior(null).refCount();
+        this.placesMidway = this.placesChangedMidway
+            .map(places => places ?
+                places.filter(place => place.isAquired)
+                    .map(place => { return { latitude: place.position.latitude, longitude: place.position.longitude } })
+                : new Array<{ latitude: number, longitude: number }>())
+            .publishBehavior(new Array<{ latitude: number, longitude: number }>()).refCount();
         this.clearPlaces();
+        
+        this.placesMidway.subscribe(value => console.log('placesMidway', value));
     }
 
     public addPlace() {
