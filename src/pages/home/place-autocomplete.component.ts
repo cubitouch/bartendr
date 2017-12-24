@@ -1,4 +1,4 @@
-import { Component, ElementRef, NgZone, OnInit, Input } from '@angular/core';
+import { Component, NgZone, OnInit, Input } from '@angular/core';
 import { MapsAPILoader } from '@agm/core';
 
 import { ViewController } from 'ionic-angular';
@@ -43,12 +43,7 @@ export class PlaceAutocompleteComponent implements OnInit {
       });
     });
   }
-
-  private clearPosition() {
-    this.place.position = null;
-    this.place.isAquired = false;
-    this.place.adress = '';
-  }
+  
   private setPosition(adress: string, lat: number, lng: number) {
     this.place.position = { latitude: lat, longitude: lng };
     this.place.isAquired = true;

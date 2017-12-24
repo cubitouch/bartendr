@@ -16,8 +16,8 @@
         </ion-list-header>
             <place-autocomplete *ngFor="let place of placesService?.places" [place]="place"></place-autocomplete>
     </ion-list>
-    <ion-fab bottom left>
-      <button ion-fab (click)="removeMeeting()" *ngIf="placesService?.places.length > 2">
+    <ion-fab bottom left *ngIf="placesService?.places.length > 2">
+      <button ion-fab (click)="removeMeeting()">
         <ion-icon name="remove"></ion-icon>
       </button>
     </ion-fab>

@@ -1,6 +1,4 @@
-import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { MapsAPILoader } from '@agm/core';
+import { Component, OnInit } from '@angular/core';
 
 import { ViewController } from 'ionic-angular';
 import { PlacesService } from '../../app/services/places.service';
@@ -11,8 +9,6 @@ import { PlacesService } from '../../app/services/places.service';
 })
 export class MeetingPage implements OnInit {
   constructor(public viewCtrl: ViewController,
-    private mapsAPILoader: MapsAPILoader,
-    private ngZone: NgZone,
     public placesService: PlacesService) {
   }
 
