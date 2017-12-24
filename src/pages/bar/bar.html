@@ -26,8 +26,8 @@
         <ion-list-header>
           <ion-icon name="time" item-start large></ion-icon>
           Horaires
-          <ion-badge item-end color="primary" *ngIf="(bar|async)?.schedule.getIsOpenNow(timeService.time|async)">Ouvert</ion-badge>
-          <ion-badge item-end color="danger" *ngIf="!(bar|async)?.schedule.getIsOpenNow(timeService.time|async)">Fermé</ion-badge>
+          <ion-badge item-end color="on" *ngIf="(bar|async)?.schedule.getIsOpenNow(timeService.time|async)">Ouvert</ion-badge>
+          <ion-badge item-end color="off" *ngIf="!(bar|async)?.schedule.getIsOpenNow(timeService.time|async)">Fermé</ion-badge>
         </ion-list-header>
         <ion-item *ngFor="let day of (bar|async)?.schedule.days" [color]="(day.isToday) ? 'primary' : ''">
           <span item-start>{{day.label}}</span>

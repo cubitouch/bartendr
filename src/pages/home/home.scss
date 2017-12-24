@@ -24,9 +24,22 @@ page-home {
           .card-subtitle {
             font-size: 1.0em;
             position: absolute;
-            top: 52%;
+            bottom: 0;
             width: 100%;
             color: #fff;
+            padding: 4px;
+
+            .distance {
+              float: left;
+            }
+            .time {
+              position: absolute;
+              width: 100%;
+              text-align: center;
+            }
+            .status {
+              float: right;
+            }
           }
         
         }

@@ -15,17 +15,17 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
-// ion-header {
-//     .toolbar-background {
-//         background: #FFC77F;
-//     }
-//     .toolbar-title {
-//         color: #D1026C;
-//     }
-//     button {
-//         color: #D1026C !important;
-//     }
-// }
+ion-header {
+    .toolbar-background {
+        background: color($colors, primary);
+    }
+    .toolbar-title {
+        color: color($colors, light);
+    }
+    button {
+        color: color($colors, light) !important;
+    }
+}
 // ion-card, ion-card-content ion-item {
 //     background: #FFC77F !important;
 //     * {

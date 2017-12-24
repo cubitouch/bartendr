@@ -19,12 +19,12 @@
     </button>
   </ion-fab>
   <ion-fab bottom left>
-    <button ion-fab (click)="refreshPosition()" [color]="placesService?.placesAquired.length < 1 ? 'danger' : 'primary'">
+    <button ion-fab (click)="refreshPosition()" [color]="placesService?.placesAquired.length < 1 ? 'dark' : 'primary'">
       <ion-icon name="pin"></ion-icon>
     </button>
   </ion-fab>
   <ion-fab bottom center>
-    <button ion-fab (click)="openMeeting()" [color]="placesService?.placesAquired.length > 1 ? 'danger' : 'primary'">
+    <button ion-fab (click)="openMeeting()" [color]="placesService?.placesAquired.length > 1 ? 'dark' : 'primary'">
       <ion-icon name="people"></ion-icon>
       <ion-badge id="meeting-badge" *ngIf="placesService?.placesAquired.length > 1">{{placesService?.placesAquired.length}}</ion-badge>
     </button>
@@ -53,9 +53,15 @@
       (click)="openBarPage(bar.id)">
       <div class="card-title">{{bar.name}}</div>
       <div class="card-subtitle">
-        {{(bar.distance) | number:'1.1-1'}} km - {{(bar.time) | number:'1.0-0'}} minutes
-        <ion-badge item-end color="primary" *ngIf="bar.schedule.getIsOpenNow(timeService.time|async)">Ouvert</ion-badge>
-        <ion-badge item-end color="danger" *ngIf="!bar.schedule.getIsOpenNow(timeService.time|async)">Fermé</ion-badge>
+        <div class="distance">
+          <ion-icon name="walk"></ion-icon>
+          {{(bar.distance) | number:'1.1-1'}} km
+        </div>
+        <div class="time">
+          <ion-icon name="stopwatch"></ion-icon>
+          {{(bar.time) | number:'1.0-0'}} minutes</div>
+        <ion-badge class="status" item-end color="on" *ngIf="bar.schedule.getIsOpenNow(timeService.time|async)">Ouvert</ion-badge>
+        <ion-badge class="status" item-end color="off" *ngIf="!bar.schedule.getIsOpenNow(timeService.time|async)">Fermé</ion-badge>
       </div>
     </ion-card>
     <ion-infinite-scroll (ionInfinite)="doInfinite($event)" [enabled]="isLazyLoadingAvailable | async">
