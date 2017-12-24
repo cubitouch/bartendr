@@ -42,9 +42,6 @@ export class BarModel {
             model.schedule.addDay(data.Vendredi, DayOfWeek.Friday);
             model.schedule.addDay(data.Samedi, DayOfWeek.Saturday);
             model.schedule.addDay(data.Dimanche, DayOfWeek.Sunday);
-            if (data.Id == 3) {
-                console.log('bizzart', data, model.schedule);
-            }
         }
 
         return model;

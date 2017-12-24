@@ -20,7 +20,6 @@ export class BarRepository {
     ) {
         this.bars = this.http.get('./assets/bars.json')
             .map((data: any[]) => BarModel.fromList(data))
-            .do(value => console.log('compute bars'))
             .shareReplay()
             .combineLatest(this.locationService.position)
             .map(([list, position]) => {
@@ -28,14 +27,12 @@ export class BarRepository {
                 return list;
             })
             .map(bars => bars.sort((a, b) => a.distance - b.distance))
-            .do(value => console.log('compute bars position'))
             .shareReplay()
             .combineLatest(this.timeService.time)
             .map(([list, time]) => {
                 list.forEach(bar => bar.initTime(time));
                 return list;
             })
-            .do(value => console.log('compute bars time'))
             .shareReplay();
     }
 
