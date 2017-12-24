@@ -146,10 +146,11 @@ export class ScheduleModel {
     }
 
     public getIsOpenNow(now: Date): boolean {
-        const day: DayModel = this.days.find(ot => ot.dayOfWeek == getDayOfWeekFromDay(now.getDay()));
+        const today: DayModel = this.days.find(ot => ot.dayOfWeek == getDayOfWeekFromDay(now.getDay()));
+        const yesterday: DayModel = this.days.find(ot => ot.dayOfWeek == getDayOfWeekFromDay((now.getDay() + 6) % 7));
 
-        // bar is open
-        return day.isOpen;
+        // if bar not open today, check for last evening (after midnight)
+        return today.isOpen || yesterday.isOpenAt(now, true);
     }
 }
 
@@ -183,8 +184,12 @@ export class DayModel {
     }
 
     public initTime(now: Date) {
-        this.isOpen = this.workingHours.filter(h => h.getIsInInterval(now)).length > 0;
+        this.isOpen = this.workingHours.filter(h => h.getIsInInterval(moment(now))).length > 0;
         this.isToday = getDayOfWeekFromDay(now.getDay()) == this.dayOfWeek;
+    }
+    public isOpenAt(time: Date, afterMidnight: boolean = false): boolean {
+        const timeToConsider = moment(time).add(afterMidnight ? 1 : 0, 'day');
+        return this.workingHours.filter(h => h.getIsInInterval(timeToConsider)).length > 0;
     }
 
     private extractHours(hours: string): WorkingHoursModel[] {
@@ -213,7 +218,7 @@ export class WorkingHoursModel {
         if (this.endTime < this.startTime)
             this.endTime = this.endTime.add(1, 'day');
     }
-    public getIsInInterval(time: Date): boolean {
-        return moment(moment(time).format('HH:mm'), ["HH:mm"]).isBetween(this.startTime, this.endTime, null, '[]');
+    public getIsInInterval(time: moment.Moment): boolean {
+        return time.isBetween(this.startTime, this.endTime, null, '[]');
     }
 }
