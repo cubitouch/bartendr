@@ -152,10 +152,10 @@ export class LocationService {
         // console.log('travels', travels);
         // console.log('distance', distances);
 
-        for (var j = 1; j < travels.length; j++) {
+        for (var k = 1; k < travels.length; k++) {
             itinerary.push({
-                a: { latitude: travels[j - 1].lat, longitude: travels[j - 1].lng },
-                b: { latitude: travels[j].lat, longitude: travels[j].lng }
+                a: { latitude: travels[k - 1].lat, longitude: travels[k - 1].lng },
+                b: { latitude: travels[k].lat, longitude: travels[k].lng }
             });
         }
 
