@@ -101,7 +101,6 @@ export class LocationService {
     public getItinerary(bars: BarModel[]): { a: { latitude: number, longitude: number }, b: { latitude: number, longitude: number } }[] {
         const itinerary = new Array<{ a: { latitude: number, longitude: number }, b: { latitude: number, longitude: number } }>();
 
-        let iterationCount = 0;
         // TODO : Fix itinerary algorithm :)
         // console.log('barsathon', bars);
 
@@ -153,10 +152,10 @@ export class LocationService {
         // console.log('travels', travels);
         // console.log('distance', distances);
 
-        for (var i = 1; i < travels.length; i++) {
+        for (var j = 1; j < travels.length; j++) {
             itinerary.push({
-                a: { latitude: travels[i - 1].lat, longitude: travels[i - 1].lng },
-                b: { latitude: travels[i].lat, longitude: travels[i].lng }
+                a: { latitude: travels[j - 1].lat, longitude: travels[j - 1].lng },
+                b: { latitude: travels[j].lat, longitude: travels[j].lng }
             });
         }
 
