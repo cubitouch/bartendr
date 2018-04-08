@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 import { NavController, LoadingController, ModalController } from 'ionic-angular';
-import { LatLngBoundsLiteral, AgmMap, GoogleMapsAPIWrapper } from '@agm/core';
+import { LatLngBoundsLiteral, AgmMap } from '@agm/core';
 
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
@@ -57,8 +57,7 @@ export class HomePage implements OnInit {
     private filtersService: FiltersService,
     public placesService: PlacesService,
     public timeService: TimeService,
-    private sanitization: DomSanitizer,
-    private mapLoader: GoogleMapsAPIWrapper) {
+    private sanitization: DomSanitizer) {
     this.isModeMap = false;
   }
 
