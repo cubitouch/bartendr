@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 import { NavController, LoadingController, ModalController } from 'ionic-angular';
-import { LatLngBoundsLiteral, AgmMap } from '@agm/core';
+import { LatLngBoundsLiteral, AgmMap, GoogleMapsAPIWrapper } from '@agm/core';
 
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
@@ -40,6 +40,11 @@ export class HomePage implements OnInit {
   public isLazyLoadingAvailable: Observable<boolean>;
   public position: Observable<{ latitude: number, longitude: number }>;
 
+  public barsBarathon: Observable<BarModel[]>;
+  public barathonPosition: Observable<{ latitude: number, longitude: number }>;
+  public barathonPositionChanged: Subject<{ latitude: number, longitude: number }>;
+  public barathonItinerary: Observable<{ a: { latitude: number, longitude: number }, b: { latitude: number, longitude: number } }[]>;
+
   // https://snazzymaps.com/style/132/light-gray
   public mapStyles: any[] = [{ "featureType": "water", "elementType": "geometry.fill", "stylers": [{ "color": "#d3d3d3" }] }, { "featureType": "transit", "stylers": [{ "color": "#808080" }, { "visibility": "off" }] }, { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{ "visibility": "on" }, { "color": "#b3b3b3" }] }, { "featureType": "road.highway", "elementType": "geometry.fill", "stylers": [{ "color": "#ffffff" }] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [{ "visibility": "on" }, { "color": "#ffffff" }, { "weight": 1.8 }] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [{ "color": "#d7d7d7" }] }, { "featureType": "poi", "elementType": "geometry.fill", "stylers": [{ "visibility": "on" }, { "color": "#ebebeb" }] }, { "featureType": "administrative", "elementType": "geometry", "stylers": [{ "color": "#a7a7a7" }] }, { "featureType": "road.arterial", "elementType": "geometry.fill", "stylers": [{ "color": "#ffffff" }] }, { "featureType": "road.arterial", "elementType": "geometry.fill", "stylers": [{ "color": "#ffffff" }] }, { "featureType": "landscape", "elementType": "geometry.fill", "stylers": [{ "visibility": "on" }, { "color": "#efefef" }] }, { "featureType": "road", "elementType": "labels.text.fill", "stylers": [{ "color": "#696969" }] }, { "featureType": "administrative", "elementType": "labels.text.fill", "stylers": [{ "visibility": "on" }, { "color": "#737373" }] }, { "featureType": "poi", "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] }, { "featureType": "poi", "elementType": "labels", "stylers": [{ "visibility": "off" }] }, { "featureType": "road.arterial", "elementType": "geometry.stroke", "stylers": [{ "color": "#d6d6d6" }] }, { "featureType": "road", "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] }, {}, { "featureType": "poi", "elementType": "geometry.fill", "stylers": [{ "color": "#dadada" }] }];
   public mapBounds: Observable<LatLngBoundsLiteral>;
@@ -52,7 +57,8 @@ export class HomePage implements OnInit {
     private filtersService: FiltersService,
     public placesService: PlacesService,
     public timeService: TimeService,
-    private sanitization: DomSanitizer) {
+    private sanitization: DomSanitizer,
+    private mapLoader: GoogleMapsAPIWrapper) {
     this.isModeMap = false;
   }
 
@@ -116,6 +122,12 @@ export class HomePage implements OnInit {
         this.toggleMapDisplay();
       }
     });
+    this.placesService.barathonCount.subscribe(count => {
+      if (count > 0) {
+        this.isModeMap = false;
+        this.toggleMapDisplay();
+      }
+    });
     this.bars = this.barsRepository.bars
       .combineLatest(this.filtersService.filters, this.timeService.time)
       .map(([bars, filters, time]) => bars.filter(bar => {
@@ -126,7 +138,30 @@ export class HomePage implements OnInit {
       }))
       .share();
 
-    this.mapBounds = this.bars.map(bars => {
+    this.barathonPositionChanged = new Subject<{ latitude: number, longitude: number }>();
+    this.barathonPosition = this.barathonPositionChanged.publishBehavior(null).refCount();
+    this.barsBarathon = Observable.combineLatest(this.bars, this.placesService.barathonCount, this.barathonPosition)
+      .map(([bars, count, position]) => {
+        if (position) {
+          // filter bar list
+          return bars.sort((barA, barB) => this.locationService.getDistance(barA, position) - this.locationService.getDistance(barB, position))
+            .slice(0, count);
+        } else {
+          return null;
+        }
+      })
+      .share();
+    this.barathonItinerary = this.barsBarathon.map(bars => {
+      if (bars) {
+        return this.locationService.getItinerary(bars);
+      } else {
+        return [];
+      }
+    });
+    // this.barathonItinerary.subscribe(value => console.log('itinerary', value));
+
+    this.mapBounds = Observable.combineLatest(this.bars, this.barsBarathon).map(([barsBase, barsBarathon]) => {
+      const bars = barsBarathon || barsBase;
       const bounds = <LatLngBoundsLiteral>{
         north: bars[0].latitude,
         south: bars[0].latitude,
@@ -166,4 +201,16 @@ export class HomePage implements OnInit {
     return item.id;
   }
 
+  public computeBarathon() {
+    this.barathonPositionChanged.next(this.lastCenter);
+  }
+  public clearBarathon() {
+    this.barathonPositionChanged.next(null);
+    this.placesService.clearBarathon();
+  }
+
+  private lastCenter: { latitude: number, longitude: number };
+  public centerChange(e) {
+    this.lastCenter = { latitude: e.lat, longitude: e.lng };
+  }
 }

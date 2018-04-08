@@ -61,3 +61,44 @@ page-home {
         }
       }
 }
+page-meeting{
+  ion-list-header ion-label {
+    white-space: initial !important;
+  }
+}
+
+.pulse {
+  box-shadow: 0 0 0 rgba(255,65,129, 0.4);
+  animation: pulse 2s infinite;
+}
+.pulse {
+  ion-icon{
+    position: absolute;
+  }
+}
+
+@-webkit-keyframes pulse {
+  0% {
+    -webkit-box-shadow: 0 0 0 0 rgba(255,65,129, 0.4);
+  }
+  70% {
+      -webkit-box-shadow: 0 0 0 20px rgba(255,65,129, 0);
+  }
+  100% {
+      -webkit-box-shadow: 0 0 0 0 rgba(255,65,129, 0);
+  }
+}
+@keyframes pulse {
+  0% {
+    -moz-box-shadow: 0 0 0 0 rgba(255,65,129, 0.4);
+    box-shadow: 0 0 0 0 rgba(255,65,129, 0.4);
+  }
+  70% {
+      -moz-box-shadow: 0 0 0 20px rgba(255,65,129, 0);
+      box-shadow: 0 0 0 20px rgba(255,65,129, 0);
+  }
+  100% {
+      -moz-box-shadow: 0 0 0 0 rgba(255,65,129, 0);
+      box-shadow: 0 0 0 0 rgba(255,65,129, 0);
+  }
+}

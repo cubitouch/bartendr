@@ -13,6 +13,9 @@ export class PlacesService {
     public placesMidway: Observable<{ latitude: number, longitude: number }[]>;
     public placesChangedMidway: Subject<PlaceModel[]>;
 
+    public barathonCount: Observable<number>;
+    public barathonCountChanged: Subject<number>;
+
     constructor() {
         this.placesChangedMidway = new Subject<PlaceModel[]>();
         this.placeMidway = this.placesChangedMidway
@@ -24,6 +27,10 @@ export class PlacesService {
                     .map(place => { return { latitude: place.position.latitude, longitude: place.position.longitude } })
                 : new Array<{ latitude: number, longitude: number }>())
             .publishBehavior(new Array<{ latitude: number, longitude: number }>()).refCount();
+
+        this.barathonCountChanged = new Subject<number>();
+        this.barathonCount = this.barathonCountChanged
+            .publishBehavior(0).refCount();
         this.clearPlaces();
     }
 
@@ -49,6 +56,13 @@ export class PlacesService {
 
     public runMidway() {
         this.placesChangedMidway.next(this.places);
+    }
+
+    public runBarathon(count: number) {
+        this.barathonCountChanged.next(count);
+    }
+    public clearBarathon() {
+        this.barathonCountChanged.next(0);
     }
 }
 

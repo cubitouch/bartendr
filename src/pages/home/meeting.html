@@ -10,25 +10,50 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
-    <ion-list>
-        <ion-list-header>
-            Entrez vos adresses pour trouver un point de rendez-vous :
-        </ion-list-header>
-            <place-autocomplete *ngFor="let place of placesService?.places" [place]="place"></place-autocomplete>
-    </ion-list>
-    <ion-fab bottom left *ngIf="placesService?.places.length > 2">
-      <button ion-fab (click)="removeMeeting()">
-        <ion-icon name="remove"></ion-icon>
-      </button>
-    </ion-fab>
-    <ion-fab bottom center>
-      <button ion-fab (click)="addMeeting()">
-        <ion-icon name="add"></ion-icon>
-      </button>
-    </ion-fab>
-    <ion-fab bottom right>
-      <button ion-fab (click)="clearMeeting()">
-        <ion-icon name="trash"></ion-icon>
-      </button>
-    </ion-fab>
+    <div padding>
+        <ion-segment [(ngModel)]="mode">
+            <ion-segment-button value="midway">
+                Mi chemin
+            </ion-segment-button>
+            <ion-segment-button value="barathon">
+                Barathon
+            </ion-segment-button>
+        </ion-segment>
+    </div>
+    <div [ngSwitch]="mode">
+        <div *ngSwitchCase="'midway'">
+            <ion-list>
+                <ion-list-header>
+                    Entrez vos adresses pour trouver un point de rendez-vous :
+                </ion-list-header>
+                <place-autocomplete *ngFor="let place of placesService?.places" [place]="place"></place-autocomplete>
+            </ion-list>
+            <ion-fab bottom left *ngIf="placesService?.places.length > 2">
+                <button ion-fab (click)="removeMeeting()">
+                    <ion-icon name="remove"></ion-icon>
+                </button>
+            </ion-fab>
+            <ion-fab bottom center>
+                <button ion-fab (click)="addMeeting()">
+                    <ion-icon name="add"></ion-icon>
+                </button>
+            </ion-fab>
+            <ion-fab bottom right>
+                <button ion-fab (click)="clearMeeting()">
+                    <ion-icon name="trash"></ion-icon>
+                </button>
+            </ion-fab>
+        </div>
+        <div *ngSwitchCase="'barathon'">
+            <ion-list>
+                <ion-list-header>
+                    Choisissez un nombre de bar et lancez le barathon :
+                </ion-list-header>
+                <ion-item>
+                    <ion-label color="primary" floating>Nombre de bars</ion-label>
+                    <ion-input type="number" value="" [(ngModel)]="barathonCount"></ion-input>
+                </ion-item>
+            </ion-list>
+        </div>
+    </div>
 </ion-content>

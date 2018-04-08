@@ -4,7 +4,7 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { IonicStorageModule } from '@ionic/storage';
-import { AgmCoreModule } from '@agm/core';
+import { AgmCoreModule, GoogleMapsAPIWrapper } from '@agm/core';
 import { AgmJsMarkerClustererModule } from '@agm/js-marker-clusterer';
 
 import { MyApp } from './app.component';
@@ -68,7 +68,8 @@ import { PlacesService } from './services/places.service';
     LocationService,
     TimeService,
     FiltersService,
-    PlacesService
+    PlacesService,
+    GoogleMapsAPIWrapper,
   ]
 })
 export class AppModule { }

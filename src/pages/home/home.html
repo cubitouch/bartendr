@@ -13,59 +13,101 @@
   </ion-navbar>
 </ion-header>
 <ion-content class="card-background-page">
-  <ion-fab bottom right>
+  <ion-fab bottom right *ngIf="(placesService.barathonCount|async)==0">
     <button ion-fab (click)="openFilters()">
       <ion-icon name="options"></ion-icon>
     </button>
   </ion-fab>
-  <ion-fab bottom left>
+  <ion-fab bottom left *ngIf="(placesService.barathonCount|async)==0">
     <button ion-fab (click)="refreshPosition()" [color]="placesService?.placesAquired.length < 1 ? 'dark' : 'primary'">
       <ion-icon name="pin"></ion-icon>
     </button>
   </ion-fab>
-  <ion-fab bottom center>
+  <ion-fab bottom center *ngIf="(placesService.barathonCount|async)==0">
     <button ion-fab (click)="openMeeting()" [color]="placesService?.placesAquired.length > 1 ? 'dark' : 'primary'">
       <ion-icon name="people"></ion-icon>
       <ion-badge id="meeting-badge" *ngIf="placesService?.placesAquired.length > 1">{{placesService?.placesAquired.length}}</ion-badge>
     </button>
   </ion-fab>
-  <ion-refresher (ionRefresh)="refreshPosition($event)" [enabled]="!isModeMap">
+  <ion-fab center middle *ngIf="(placesService.barathonCount|async) > 0 && !(barsBarathon|async)">
+    <button ion-fab mini class="pulse" (click)="computeBarathon()">
+      <ion-icon name="wine"></ion-icon>
+    </button>
+  </ion-fab>
+  <ion-fab bottom right *ngIf="(placesService.barathonCount|async) > 0 && (barsBarathon|async)">
+    <button ion-fab (click)="clearBarathon()" color="dark">
+      <ion-icon name="exit"></ion-icon>
+    </button>
+  </ion-fab>
+  <ion-refresher (ionRefresh)="refreshPosition($event)" [enabled]="!isModeMap && !(barsBarathon|async)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <div [style.display]="isModeMap ? 'inherit' : 'none'">
-    <agm-map [styles]="mapStyles" [fitBounds]="mapBounds | async" [zoom]="14" [latitude]="(position | async)?.latitude" [longitude]="(position | async)?.longitude">
-      <agm-marker [latitude]="(position | async)?.latitude" [longitude]="(position | async)?.longitude" [iconUrl]="'http://mt.google.com/vt/icon?color=ff004C13&name=icons/spotlight/spotlight-waypoint-blue.png'"></agm-marker>
-      <agm-marker *ngFor="let place of placesService.placesMidway | async" [latitude]="place.latitude" [longitude]="place.longitude"
-        [iconUrl]="'https://mt.google.com/vt/icon?psize=30&font=fonts/arialuni_t.ttf&color=ff304C13&name=icons/spotlight/spotlight-waypoint-a.png&ax=43&ay=48&text=%E2%80%A2'"></agm-marker>
-      <agm-polyline [strokeWeight]="4" [strokeColor]="'#FF4081'" [strokeOpacity]="0.8">
-        <ng-container *ngFor="let place of placesService.placesMidway | async">
-          <agm-polyline-point [latitude]="(position | async)?.latitude" [longitude]="(position | async)?.longitude"></agm-polyline-point>
-          <agm-polyline-point [latitude]="place.latitude" [longitude]="place.longitude"></agm-polyline-point>
-        </ng-container>
-      </agm-polyline>
-      <agm-marker-cluster imagePath="https://raw.githubusercontent.com/googlemaps/v3-utility-library/master/markerclustererplus/images/m">
-        <agm-marker *ngFor="let bar of bars | async;trackBy: trackById" [latitude]="bar.latitude" [longitude]="bar.longitude" (markerClick)="openBarPage(bar.id)"></agm-marker>
-      </agm-marker-cluster>
+  <div id="barMap" [style.display]="isModeMap ? 'inherit' : 'none'">
+    <agm-map (centerChange)="centerChange($event)" [styles]="mapStyles" [fitBounds]="mapBounds | async" [zoom]="14" [latitude]="(position | async)?.latitude"
+      [longitude]="(position | async)?.longitude" [disableDefaultUI]="true">
+      <ng-container *ngIf="!(barsBarathon|async)">
+        <agm-marker [latitude]="(position | async)?.latitude" [longitude]="(position | async)?.longitude" [iconUrl]="'http://mt.google.com/vt/icon?color=ff004C13&name=icons/spotlight/spotlight-waypoint-blue.png'"></agm-marker>
+        <agm-marker *ngFor="let place of placesService.placesMidway | async" [latitude]="place.latitude" [longitude]="place.longitude"
+          [iconUrl]="'https://mt.google.com/vt/icon?psize=30&font=fonts/arialuni_t.ttf&color=ff304C13&name=icons/spotlight/spotlight-waypoint-a.png&ax=43&ay=48&text=%E2%80%A2'"></agm-marker>
+        <agm-polyline [strokeWeight]="4" [strokeColor]="'#FF4081'" [strokeOpacity]="0.8">
+          <ng-container *ngFor="let place of placesService.placesMidway | async">
+            <agm-polyline-point [latitude]="(position | async)?.latitude" [longitude]="(position | async)?.longitude"></agm-polyline-point>
+            <agm-polyline-point [latitude]="place.latitude" [longitude]="place.longitude"></agm-polyline-point>
+          </ng-container>
+        </agm-polyline>
+        <agm-marker-cluster imagePath="https://raw.githubusercontent.com/googlemaps/v3-utility-library/master/markerclustererplus/images/m">
+          <agm-marker *ngFor="let bar of bars | async;trackBy: trackById" [latitude]="bar.latitude" [longitude]="bar.longitude" (markerClick)="openBarPage(bar.id)"></agm-marker>
+        </agm-marker-cluster>
+      </ng-container>
+      <ng-container *ngIf="(barsBarathon|async)">
+        <agm-marker *ngFor="let bar of barsBarathon | async;trackBy: trackById" [latitude]="bar.latitude" [longitude]="bar.longitude"
+          (markerClick)="openBarPage(bar.id)"></agm-marker>
+        <agm-polyline [strokeWeight]="4" [strokeColor]="'#FF4081'" [strokeOpacity]="0.8">
+          <ng-container *ngFor="let itinerary of barathonItinerary | async">
+            <agm-polyline-point [latitude]="itinerary.a.latitude" [longitude]="itinerary.a.longitude"></agm-polyline-point>
+            <agm-polyline-point [latitude]="itinerary.b.latitude" [longitude]="itinerary.b.longitude"></agm-polyline-point>
+          </ng-container>
+        </agm-polyline>
+
+      </ng-container>
     </agm-map>
   </div>
-  <div [style.display]="!isModeMap ? 'inherit' : 'none'">
-    <ion-card *ngFor="let bar of (barsDisplayed | async);trackBy: trackById" [style.background-image]="safeUrl(bar.picture)"
-      (click)="openBarPage(bar.id)">
-      <div class="card-title">{{bar.name}}</div>
-      <div class="card-subtitle">
-        <div class="distance">
-          <ion-icon name="walk"></ion-icon>
-          {{(bar.distance) | number:'1.1-1'}} km
+  <div id="barList" [style.display]="!isModeMap ? 'inherit' : 'none'">
+    <ng-container *ngIf="!(barsBarathon|async)">
+      <ion-card *ngFor="let bar of (barsDisplayed | async);trackBy: trackById" [style.background-image]="safeUrl(bar.picture)"
+        (click)="openBarPage(bar.id)">
+        <div class="card-title">{{bar.name}}</div>
+        <div class="card-subtitle">
+          <div class="distance">
+            <ion-icon name="walk"></ion-icon>
+            {{(bar.distance) | number:'1.1-1'}} km
+          </div>
+          <div class="time">
+            <ion-icon name="stopwatch"></ion-icon>
+            {{(bar.time) | number:'1.0-0'}} minutes</div>
+          <ion-badge class="status" item-end color="on" *ngIf="bar.schedule.getIsOpenNow(timeService.time|async)">Ouvert</ion-badge>
+          <ion-badge class="status" item-end color="off" *ngIf="!bar.schedule.getIsOpenNow(timeService.time|async)">Fermé</ion-badge>
         </div>
-        <div class="time">
-          <ion-icon name="stopwatch"></ion-icon>
-          {{(bar.time) | number:'1.0-0'}} minutes</div>
-        <ion-badge class="status" item-end color="on" *ngIf="bar.schedule.getIsOpenNow(timeService.time|async)">Ouvert</ion-badge>
-        <ion-badge class="status" item-end color="off" *ngIf="!bar.schedule.getIsOpenNow(timeService.time|async)">Fermé</ion-badge>
-      </div>
-    </ion-card>
-    <ion-infinite-scroll (ionInfinite)="doInfinite($event)" [enabled]="isLazyLoadingAvailable | async">
-      <ion-infinite-scroll-content></ion-infinite-scroll-content>
-    </ion-infinite-scroll>
+      </ion-card>
+      <ion-infinite-scroll (ionInfinite)="doInfinite($event)" [enabled]="isLazyLoadingAvailable | async">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </ng-container>
+    <ng-container *ngIf="(barsBarathon|async)">
+      <ion-card *ngFor="let bar of (barsBarathon | async);trackBy: trackById" [style.background-image]="safeUrl(bar.picture)" (click)="openBarPage(bar.id)">
+        <div class="card-title">{{bar.name}}</div>
+        <div class="card-subtitle">
+          <div class="distance">
+            <ion-icon name="walk"></ion-icon>
+            {{(bar.distance) | number:'1.1-1'}} km
+          </div>
+          <div class="time">
+            <ion-icon name="stopwatch"></ion-icon>
+            {{(bar.time) | number:'1.0-0'}} minutes</div>
+          <ion-badge class="status" item-end color="on" *ngIf="bar.schedule.getIsOpenNow(timeService.time|async)">Ouvert</ion-badge>
+          <ion-badge class="status" item-end color="off" *ngIf="!bar.schedule.getIsOpenNow(timeService.time|async)">Fermé</ion-badge>
+        </div>
+      </ion-card>
+    </ng-container>
   </div>
 </ion-content>
