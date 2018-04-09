@@ -98,97 +98,35 @@ export class LocationService {
         );
     }
 
-    public getItinerary(bars: BarModel[]): { a: { latitude: number, longitude: number }, b: { latitude: number, longitude: number } }[] {
+
+    public getItinerary(position: { latitude: number, longitude: number }, bars: BarModel[]): { a: { latitude: number, longitude: number }, b: { latitude: number, longitude: number } }[] {
         const itinerary = new Array<{ a: { latitude: number, longitude: number }, b: { latitude: number, longitude: number } }>();
 
-        // TODO : Fix itinerary algorithm :)
-        // console.log('barsathon', bars);
-
         var positions = bars.map(function (bar) { return { lat: bar.latitude, lng: bar.longitude }; });
-        console.log(positions);
+        // get the farest point from the position
+        var origin = positions
+            .map(barPosition => { return { position: barPosition, distance: distanceInKmBetweenEarthCoordinates(position.latitude, position.longitude, barPosition.lat, barPosition.lng) } })
+            .sort(function (a, b) { return a.distance - b.distance })[0];
+        // get a list of all other points
+        positions.splice(positions.indexOf(origin.position), 1);
+        // LOOP while list is not empty
+        var i = 0;
+        while (positions.length > 0 && i<500) {
+            // -- get the next closest point
+            var next = positions
+                .map(barPosition => { return { position: barPosition, distance: distanceInKmBetweenEarthCoordinates(origin.position.lat, origin.position.lng, barPosition.lat, barPosition.lng) } })
+                .sort(function (a, b) { return a.distance - b.distance })[0];
+            // add path item
+            itinerary.push({ a: { latitude: origin.position.lat, longitude: origin.position.lng }, b: { latitude: next.position.lat, longitude: next.position.lng } })
 
-        var travels = [];
-
-        var distances = [];
-        for (var i = 0; i < positions.length - 1; i++) {
-            for (var j = i + 1; j < positions.length; j++) {
-                distances.push({
-                    a: positions[i],
-                    b: positions[j],
-                    distance: distanceInKmBetweenEarthCoordinates(positions[i].lat, positions[i].lng, positions[j].lat, positions[j].lng)
-                });
-            }
-        }
-        distances = distances.sort(function (a, b) { return a.distance - b.distance });
-        // console.log('distance', distances);
-        this.chooseTravel(distances, travels, distances[0], true);
-
-        var maxLoop = 500;
-        var iLoop = 0;
-        do {
-            // take a coordinates
-            var coord = travels[travels.length - 1];
-            // console.log('coord', coord);
-            var results = this.getDistancesFromPoint(distances, travels, coord);
-
-            var isBpoint = false;
-            if (results.length == 0) {
-                isBpoint = true;
-                results = this.getDistancesFromPoint(distances, travels, coord, true);
-            }
-
-            if (results.length > 0) {
-                this.chooseTravel(distances, travels, results[0], isBpoint);
-            } else {
-                // end of path to be sure
-                // console.log('break');
-                break;
-            }
-            // choose path
-            iLoop++;
-            // console.log('travels.length < positions.length-1 && iLoop < maxLoop', distances, travels, iLoop, travels.length < positions.length - 1 && iLoop < maxLoop);
-        } while (travels.length - 1 < positions.length && iLoop < maxLoop);
-
-        // console.log('travels', travels);
-        // console.log('distance', distances);
-
-        for (var k = 1; k < travels.length; k++) {
-            itinerary.push({
-                a: { latitude: travels[k - 1].lat, longitude: travels[k - 1].lng },
-                b: { latitude: travels[k].lat, longitude: travels[k].lng }
-            });
+            // -- remove this last one
+            origin = next;
+            positions.splice(positions.indexOf(origin.position), 1);
+            i++;
         }
 
         return itinerary;
     }
-    private getDistancesFromPoint(distances, travels, coord, isB?) {
-        return distances
-            // find all distances that link a to distance.a or distance.b
-            .filter(function (distance) { return distance.a.lat == coord.lat && distance.a.lng == coord.lng || distance.b.lat == coord.lat && distance.b.lng == coord.lng; })
-            // filter distance with end of path already on the current travel
-            .filter(function (distance) {
-                return travels.filter(function (travel) {
-                    if (isB) {
-                        return distance.a.lat == travel.lat && distance.a.lng == travel.lng;
-                    }
-                    return distance.b.lat == travel.lat && distance.b.lng == travel.lng;
-                }).length == 0;
-            })
-            // order results by distance
-            .sort(function (a, b) { return a.distance - b.distance });
-    }
-
-    private chooseTravel(distances, travels, distance, isFirst) {
-        // console.log('choose', distance);
-        var i = distances.indexOf(distance);
-        if (isFirst) {
-            travels.push(distance.a);
-        }
-        travels.push(distance.b);
-        distances.splice(i, 1);
-    }
-
-
 }
 
 function degreesToRadians(degrees): number {

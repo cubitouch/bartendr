@@ -150,14 +150,13 @@ export class HomePage implements OnInit {
         }
       })
       .share();
-    this.barathonItinerary = this.barsBarathon.map(bars => {
+    this.barathonItinerary = Observable.combineLatest(this.barsBarathon, this.barathonPosition).map(([bars, position]) => {
       if (bars) {
-        return this.locationService.getItinerary(bars);
+        return this.locationService.getItinerary(position, bars);
       } else {
         return [];
       }
     });
-    // this.barathonItinerary.subscribe(value => console.log('itinerary', value));
 
     this.mapBounds = Observable.combineLatest(this.bars, this.barsBarathon).map(([barsBase, barsBarathon]) => {
       const bars = barsBarathon || barsBase;
