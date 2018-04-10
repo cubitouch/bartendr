@@ -38,17 +38,18 @@
     "@ionic/app-scripts": "3.1.2",
     "md5": "^2.2.1",
     "node-gyp": "^3.6.2",
+    "postcss": "6.0.14",
     "purify-css": "^1.2.5",
-    "purifycss": "^1.2.6",
     "rebuild": "^0.1.2",
     "rimraf": "^2.6.2",
+    "sass": "^1.1.1",
     "sharp": "^0.18.4",
     "typescript": "2.4.2"
   },
   "description": "An Ionic project",
   "config": {
     "ionic_bundler": "webpack",
-    "disabled_ionic_webpack": "./webpack.config.js",
+    "ionic_webpack": "./webpack.config.js",
     "ionic_sass": "./sass.js"
   }
 }
