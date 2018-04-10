@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 import { NavController, LoadingController, ModalController } from 'ionic-angular';
-import { LatLngBoundsLiteral, AgmMap } from '@agm/core';
+import { LatLngBoundsLiteral } from '@agm/core';
 
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
@@ -23,13 +23,15 @@ import { FiltersPage } from './filters';
 import { MeetingPage } from './meeting';
 import { PlacesService } from '../../app/services/places.service';
 import { TimeService } from '../../app/services/time.service';
+import { BarathonService } from '../../app/services/barathon.service';
+import { MapComponent } from './map.component';
 
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
 })
 export class HomePage implements OnInit {
-  @ViewChild(AgmMap) public map: AgmMap;
+  @ViewChild(MapComponent) public map: MapComponent;
 
   public pageSizeDefault: number = 5;
   public isModeMap: boolean;
@@ -41,12 +43,8 @@ export class HomePage implements OnInit {
   public position: Observable<{ latitude: number, longitude: number }>;
 
   public barsBarathon: Observable<BarModel[]>;
-  public barathonPosition: Observable<{ latitude: number, longitude: number }>;
-  public barathonPositionChanged: Subject<{ latitude: number, longitude: number }>;
   public barathonItinerary: Observable<{ a: { latitude: number, longitude: number }, b: { latitude: number, longitude: number } }[]>;
 
-  // https://snazzymaps.com/style/132/light-gray
-  public mapStyles: any[] = [{ "featureType": "water", "elementType": "geometry.fill", "stylers": [{ "color": "#d3d3d3" }] }, { "featureType": "transit", "stylers": [{ "color": "#808080" }, { "visibility": "off" }] }, { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{ "visibility": "on" }, { "color": "#b3b3b3" }] }, { "featureType": "road.highway", "elementType": "geometry.fill", "stylers": [{ "color": "#ffffff" }] }, { "featureType": "road.local", "elementType": "geometry.fill", "stylers": [{ "visibility": "on" }, { "color": "#ffffff" }, { "weight": 1.8 }] }, { "featureType": "road.local", "elementType": "geometry.stroke", "stylers": [{ "color": "#d7d7d7" }] }, { "featureType": "poi", "elementType": "geometry.fill", "stylers": [{ "visibility": "on" }, { "color": "#ebebeb" }] }, { "featureType": "administrative", "elementType": "geometry", "stylers": [{ "color": "#a7a7a7" }] }, { "featureType": "road.arterial", "elementType": "geometry.fill", "stylers": [{ "color": "#ffffff" }] }, { "featureType": "road.arterial", "elementType": "geometry.fill", "stylers": [{ "color": "#ffffff" }] }, { "featureType": "landscape", "elementType": "geometry.fill", "stylers": [{ "visibility": "on" }, { "color": "#efefef" }] }, { "featureType": "road", "elementType": "labels.text.fill", "stylers": [{ "color": "#696969" }] }, { "featureType": "administrative", "elementType": "labels.text.fill", "stylers": [{ "visibility": "on" }, { "color": "#737373" }] }, { "featureType": "poi", "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] }, { "featureType": "poi", "elementType": "labels", "stylers": [{ "visibility": "off" }] }, { "featureType": "road.arterial", "elementType": "geometry.stroke", "stylers": [{ "color": "#d6d6d6" }] }, { "featureType": "road", "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] }, {}, { "featureType": "poi", "elementType": "geometry.fill", "stylers": [{ "color": "#dadada" }] }];
   public mapBounds: Observable<LatLngBoundsLiteral>;
 
   constructor(public navCtrl: NavController,
@@ -57,7 +55,8 @@ export class HomePage implements OnInit {
     private filtersService: FiltersService,
     public placesService: PlacesService,
     public timeService: TimeService,
-    private sanitization: DomSanitizer) {
+    private sanitization: DomSanitizer,
+    private barathonService: BarathonService) {
     this.isModeMap = false;
   }
 
@@ -94,7 +93,7 @@ export class HomePage implements OnInit {
   public toggleMapDisplay() {
     this.isModeMap = !this.isModeMap;
     if (!this.mapWasResized) {
-      this.map.triggerResize(true);
+      this.map.map.triggerResize(true);
       this.mapWasResized = true;
     }
   }
@@ -135,28 +134,31 @@ export class HomePage implements OnInit {
         }
         return true;
       }))
-      .share();
+      .shareReplay();
 
-    this.barathonPositionChanged = new Subject<{ latitude: number, longitude: number }>();
-    this.barathonPosition = this.barathonPositionChanged.publishBehavior(null).refCount();
-    this.barsBarathon = Observable.combineLatest(this.bars, this.placesService.barathonCount, this.barathonPosition)
-      .map(([bars, count, position]) => {
-        if (position) {
-          // filter bar list
-          return bars.sort((barA, barB) => this.locationService.getDistance(barA, position) - this.locationService.getDistance(barB, position))
-            .slice(0, count);
-        } else {
-          return null;
-        }
-      })
-      .share();
-    this.barathonItinerary = Observable.combineLatest(this.barsBarathon, this.barathonPosition).map(([bars, position]) => {
-      if (bars) {
-        return this.locationService.getItinerary(position, bars);
+    this.barsBarathon = Observable.combineLatest(
+      this.bars,
+      this.placesService.barathonCount,
+      this.barathonService.barathonPosition
+    ).map(([bars, count, position]) => {
+      if (position) {
+        // filter bar list
+        return bars.sort((barA, barB) => this.locationService.getDistance(barA, position) - this.locationService.getDistance(barB, position))
+          .slice(0, count);
       } else {
-        return [];
+        return null;
       }
-    });
+    })
+      .shareReplay();
+    this.barathonItinerary = Observable.combineLatest(
+      this.barsBarathon,
+      this.barathonService.barathonPosition).map(([bars, position]) => {
+        if (position) {
+          return this.locationService.getItinerary(position, bars);
+        } else {
+          return [];
+        }
+      });
 
     this.mapBounds = Observable.combineLatest(this.bars, this.barsBarathon).map(([barsBase, barsBarathon]) => {
       const bars = barsBarathon || barsBase;
@@ -200,15 +202,11 @@ export class HomePage implements OnInit {
   }
 
   public computeBarathon() {
-    this.barathonPositionChanged.next(this.lastCenter);
+    this.barathonService.setActive(true);
   }
   public clearBarathon() {
-    this.barathonPositionChanged.next(null);
+    this.barathonService.setActive(false);
     this.placesService.clearBarathon();
   }
 
-  private lastCenter: { latitude: number, longitude: number };
-  public centerChange(e) {
-    this.lastCenter = { latitude: e.lat, longitude: e.lng };
-  }
 }

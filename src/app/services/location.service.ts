@@ -102,27 +102,29 @@ export class LocationService {
     public getItinerary(position: { latitude: number, longitude: number }, bars: BarModel[]): { a: { latitude: number, longitude: number }, b: { latitude: number, longitude: number } }[] {
         const itinerary = new Array<{ a: { latitude: number, longitude: number }, b: { latitude: number, longitude: number } }>();
 
-        var positions = bars.map(function (bar) { return { lat: bar.latitude, lng: bar.longitude }; });
-        // get the farest point from the position
-        var origin = positions
-            .map(barPosition => { return { position: barPosition, distance: distanceInKmBetweenEarthCoordinates(position.latitude, position.longitude, barPosition.lat, barPosition.lng) } })
-            .sort(function (a, b) { return a.distance - b.distance })[0];
-        // get a list of all other points
-        positions.splice(positions.indexOf(origin.position), 1);
-        // LOOP while list is not empty
-        var i = 0;
-        while (positions.length > 0 && i<500) {
-            // -- get the next closest point
-            var next = positions
-                .map(barPosition => { return { position: barPosition, distance: distanceInKmBetweenEarthCoordinates(origin.position.lat, origin.position.lng, barPosition.lat, barPosition.lng) } })
+        if (bars) {
+            var positions = bars.map(function (bar) { return { lat: bar.latitude, lng: bar.longitude }; });
+            // get the farest point from the position
+            var origin = positions
+                .map(barPosition => { return { position: barPosition, distance: distanceInKmBetweenEarthCoordinates(position.latitude, position.longitude, barPosition.lat, barPosition.lng) } })
                 .sort(function (a, b) { return a.distance - b.distance })[0];
-            // add path item
-            itinerary.push({ a: { latitude: origin.position.lat, longitude: origin.position.lng }, b: { latitude: next.position.lat, longitude: next.position.lng } })
-
-            // -- remove this last one
-            origin = next;
+            // get a list of all other points
             positions.splice(positions.indexOf(origin.position), 1);
-            i++;
+            // LOOP while list is not empty
+            var i = 0;
+            while (positions.length > 0 && i < 500) {
+                // -- get the next closest point
+                var next = positions
+                    .map(barPosition => { return { position: barPosition, distance: distanceInKmBetweenEarthCoordinates(origin.position.lat, origin.position.lng, barPosition.lat, barPosition.lng) } })
+                    .sort(function (a, b) { return a.distance - b.distance })[0];
+                // add path item
+                itinerary.push({ a: { latitude: origin.position.lat, longitude: origin.position.lng }, b: { latitude: next.position.lat, longitude: next.position.lng } })
+
+                // -- remove this last one
+                origin = next;
+                positions.splice(positions.indexOf(origin.position), 1);
+                i++;
+            }
         }
 
         return itinerary;

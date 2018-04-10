@@ -14,7 +14,6 @@ export class TimeService {
         this.time = Observable.interval(5000)
             .filter(value => document.visibilityState === 'visible')
             .map(i => new Date())
-            .share()
             .publishBehavior(new Date()).refCount();
         this.day = this.time.map(t => t.getDay() as DayOfWeek);
     }

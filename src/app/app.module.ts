@@ -21,7 +21,9 @@ import { FiltersPage } from '../pages/home/filters';
 import { FiltersService } from './services/filters.service';
 import { MeetingPage } from '../pages/home/meeting';
 import { PlaceAutocompleteComponent } from '../pages/home/place-autocomplete.component';
+import { MapComponent } from '../pages/home/map.component';
 import { PlacesService } from './services/places.service';
+import { BarathonService } from './services/barathon.service';
 
 @NgModule({
   declarations: [
@@ -31,7 +33,8 @@ import { PlacesService } from './services/places.service';
     MeetingPage,
     AboutPage,
     BarPage,
-    PlaceAutocompleteComponent
+    PlaceAutocompleteComponent,
+    MapComponent
   ],
   imports: [
     BrowserModule,
@@ -69,6 +72,7 @@ import { PlacesService } from './services/places.service';
     TimeService,
     FiltersService,
     PlacesService,
+    BarathonService,
     GoogleMapsAPIWrapper,
   ]
 })

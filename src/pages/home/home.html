@@ -43,34 +43,8 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
   <div id="barMap" [style.display]="isModeMap ? 'inherit' : 'none'">
-    <agm-map (centerChange)="centerChange($event)" [styles]="mapStyles" [fitBounds]="mapBounds | async" [zoom]="14" [latitude]="(position | async)?.latitude"
-      [longitude]="(position | async)?.longitude" [disableDefaultUI]="true">
-      <ng-container *ngIf="!(barsBarathon|async)">
-        <agm-marker [latitude]="(position | async)?.latitude" [longitude]="(position | async)?.longitude" [iconUrl]="'http://mt.google.com/vt/icon?color=ff004C13&name=icons/spotlight/spotlight-waypoint-blue.png'"></agm-marker>
-        <agm-marker *ngFor="let place of placesService.placesMidway | async" [latitude]="place.latitude" [longitude]="place.longitude"
-          [iconUrl]="'https://mt.google.com/vt/icon?psize=30&font=fonts/arialuni_t.ttf&color=ff304C13&name=icons/spotlight/spotlight-waypoint-a.png&ax=43&ay=48&text=%E2%80%A2'"></agm-marker>
-        <agm-polyline [strokeWeight]="4" [strokeColor]="'#FF4081'" [strokeOpacity]="0.8">
-          <ng-container *ngFor="let place of placesService.placesMidway | async">
-            <agm-polyline-point [latitude]="(position | async)?.latitude" [longitude]="(position | async)?.longitude"></agm-polyline-point>
-            <agm-polyline-point [latitude]="place.latitude" [longitude]="place.longitude"></agm-polyline-point>
-          </ng-container>
-        </agm-polyline>
-        <agm-marker-cluster imagePath="https://raw.githubusercontent.com/googlemaps/v3-utility-library/master/markerclustererplus/images/m">
-          <agm-marker *ngFor="let bar of bars | async;trackBy: trackById" [latitude]="bar.latitude" [longitude]="bar.longitude" (markerClick)="openBarPage(bar.id)"></agm-marker>
-        </agm-marker-cluster>
-      </ng-container>
-      <ng-container *ngIf="(barsBarathon|async)">
-        <agm-marker *ngFor="let bar of barsBarathon | async;trackBy: trackById" [latitude]="bar.latitude" [longitude]="bar.longitude"
-          (markerClick)="openBarPage(bar.id)"></agm-marker>
-        <agm-polyline [strokeWeight]="4" [strokeColor]="'#FF4081'" [strokeOpacity]="0.8">
-          <ng-container *ngFor="let itinerary of barathonItinerary | async">
-            <agm-polyline-point [latitude]="itinerary.a.latitude" [longitude]="itinerary.a.longitude"></agm-polyline-point>
-            <agm-polyline-point [latitude]="itinerary.b.latitude" [longitude]="itinerary.b.longitude"></agm-polyline-point>
-          </ng-container>
-        </agm-polyline>
-
-      </ng-container>
-    </agm-map>
+    <map-component [mapBounds]="mapBounds" [position]="position" [bars]="bars"
+    [barsBarathon]="barsBarathon" [barathonItinerary]="barathonItinerary"></map-component>
   </div>
   <div id="barList" [style.display]="!isModeMap ? 'inherit' : 'none'">
     <ng-container *ngIf="!(barsBarathon|async)">
