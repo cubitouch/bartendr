@@ -1,9 +1,15 @@
 <ion-header>
     <ion-navbar>
         <ion-buttons start>
-            <button ion-button (click)="dismiss()">
-                <span ion-text showWhen="ios">Fermer</span>
-                <ion-icon name="checkmark-circle-outline" showWhen="android,windows"></ion-icon>
+            <button ion-button icon-left (click)="dismiss()">
+                <ion-icon name="arrow-back"></ion-icon>
+                <span ion-text>Fermer</span>
+            </button>
+        </ion-buttons>
+        <ion-buttons end>
+            <button ion-button icon-left (click)="run()">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+                <span ion-text>Go</span>
             </button>
         </ion-buttons>
         <ion-title>Se retrouver</ion-title>

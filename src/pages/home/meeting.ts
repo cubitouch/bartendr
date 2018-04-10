@@ -18,8 +18,11 @@ export class MeetingPage implements OnInit {
     this.mode = 'midway';
     this.barathonCount = 3;
   }
-
   dismiss() {
+    this.viewCtrl.dismiss();
+  }
+
+  run() {
     this.viewCtrl.dismiss();
     if (this.mode === 'midway') {
       if (this.placesService.isAquired()) {
