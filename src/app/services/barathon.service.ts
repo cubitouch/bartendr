@@ -5,7 +5,6 @@ import 'rxjs/add/observable/interval';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/publishBehavior';
 import 'rxjs/add/operator/publishReplay';
-import { BarRepository } from './bars.repository';
 
 @Injectable()
 export class BarathonService {
@@ -16,7 +15,7 @@ export class BarathonService {
     private activeChanged: Subject<boolean>;
     private mapCenterChanged: Subject<{ latitude: number, longitude: number }>;
 
-    constructor(private barRepository: BarRepository) {
+    constructor() {
         this.activeChanged = new Subject<boolean>();
         this.active = this.activeChanged.publishBehavior(false).refCount();
 

@@ -1,7 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs/Observable";
-import { Subject } from "rxjs/Subject";
 import { BarModel } from "../models/bar.model";
 import { LocationService } from "./location.service";
 import 'rxjs/add/operator/shareReplay';
@@ -15,14 +14,14 @@ import { TimeService } from "./time.service";
 @Injectable()
 export class BarRepository {
     public bars: Observable<BarModel[]>;
-    private refreshTrigger: Subject<any>;
+    // private refreshTrigger: Subject<any>;
 
     constructor(
         private http: HttpClient,
         private locationService: LocationService,
         private timeService: TimeService,
     ) {
-        this.refreshTrigger = new Subject<any>();
+        // this.refreshTrigger = new Subject<any>();
         this.bars = this.http.get('./assets/bars.json')
             .map((data: any[]) => BarModel.fromList(data))
             .shareReplay()
@@ -32,9 +31,9 @@ export class BarRepository {
                 return list;
             })
             .map(bars => bars.sort((a, b) => a.distance - b.distance))
-            .shareReplay()
-            .withLatestFrom(this.refreshTrigger.publishBehavior(null).refCount())
-            .map(([list, trigger]) => list)
+            // .shareReplay()
+            // .withLatestFrom(this.refreshTrigger.publishBehavior(null).refCount())
+            // .map(([list, trigger]) => list)
             .shareReplay()
             .zip(this.timeService.time)
             .map(([list, time]) => {
@@ -43,8 +42,8 @@ export class BarRepository {
             })
             .shareReplay();
     }
-    public refresh() {
-        this.refreshTrigger.next();
-    }
+    // public refresh() {
+    //     this.refreshTrigger.next();
+    // }
 
 }
