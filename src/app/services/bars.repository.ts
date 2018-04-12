@@ -35,14 +35,12 @@ export class BarRepository {
             .shareReplay()
             .withLatestFrom(this.refreshTrigger.publishBehavior(null).refCount())
             .map(([list, trigger]) => list)
-            .do(value => console.log('bars refresh', new Date(), value))
             .shareReplay()
             .zip(this.timeService.time)
             .map(([list, time]) => {
                 list.forEach(bar => bar.initTime(time));
                 return list;
             })
-            .do(value => console.log('bars + time', new Date(), value))
             .shareReplay();
     }
     public refresh() {

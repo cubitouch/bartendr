@@ -16,7 +16,6 @@ export class BarathonService {
     private activeChanged: Subject<boolean>;
     private mapCenterChanged: Subject<{ latitude: number, longitude: number }>;
 
-    private latestPosition: { latitude: number, longitude: number };
     constructor(private barRepository: BarRepository) {
         this.activeChanged = new Subject<boolean>();
         this.active = this.activeChanged.publishBehavior(false).refCount();
@@ -25,12 +24,9 @@ export class BarathonService {
         this.mapCenter = this.mapCenterChanged.publishBehavior(null).refCount();
 
         // should only change when it pass from false to true, then from true to false return null
-        this.barathonPosition = this.mapCenter.combineLatest(this.active).map(([position, active]) => {
+        this.barathonPosition = this.active.withLatestFrom(this.mapCenter).map(([active, position]) => {
             if (active) {
-                if (!this.latestPosition) {
-                    this.latestPosition = position;
-                }
-                return this.latestPosition;
+                return position;
             }
             return null;
         });
@@ -38,9 +34,6 @@ export class BarathonService {
 
     public setActive(active: boolean) {
         this.activeChanged.next(active);
-        // if (!active) {
-            this.barRepository.refresh();
-        // }
     }
 
     public setMapCenter(position: { latitude: number, longitude: number }) {

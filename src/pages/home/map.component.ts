@@ -52,16 +52,7 @@ export class MapComponent implements OnInit {
             ]
         },
         {
-            "featureType": "administrative.province",
-            "elementType": "geometry.fill",
-            "stylers": [
-                {
-                    "lightness": "-3"
-                }
-            ]
-        },
-        {
-            "featureType": "administrative.province",
+            "featureType": "administrative.land_parcel",
             "elementType": "labels",
             "stylers": [
                 {
@@ -88,7 +79,16 @@ export class MapComponent implements OnInit {
             ]
         },
         {
-            "featureType": "administrative.land_parcel",
+            "featureType": "administrative.province",
+            "elementType": "geometry.fill",
+            "stylers": [
+                {
+                    "lightness": "-3"
+                }
+            ]
+        },
+        {
+            "featureType": "administrative.province",
             "elementType": "labels",
             "stylers": [
                 {
@@ -98,7 +98,6 @@ export class MapComponent implements OnInit {
         },
         {
             "featureType": "landscape",
-            "elementType": "all",
             "stylers": [
                 {
                     "color": "#ffffff"
@@ -131,10 +130,10 @@ export class MapComponent implements OnInit {
             "elementType": "geometry.fill",
             "stylers": [
                 {
-                    "visibility": "on"
+                    "color": "#e0efef"
                 },
                 {
-                    "color": "#e0efef"
+                    "visibility": "on"
                 }
             ]
         },
@@ -155,7 +154,6 @@ export class MapComponent implements OnInit {
         },
         {
             "featureType": "landscape.natural.terrain",
-            "elementType": "all",
             "stylers": [
                 {
                     "gamma": "1.22"
@@ -176,10 +174,10 @@ export class MapComponent implements OnInit {
             "elementType": "geometry.fill",
             "stylers": [
                 {
-                    "visibility": "on"
+                    "color": "#e6f4d2"
                 },
                 {
-                    "color": "#e6f4d2"
+                    "visibility": "on"
                 }
             ]
         },
@@ -194,7 +192,6 @@ export class MapComponent implements OnInit {
         },
         {
             "featureType": "poi.park",
-            "elementType": "all",
             "stylers": [
                 {
                     "color": "#e6f4d2"
@@ -230,7 +227,6 @@ export class MapComponent implements OnInit {
         },
         {
             "featureType": "road",
-            "elementType": "all",
             "stylers": [
                 {
                     "color": "#f4f4f4"
@@ -263,43 +259,10 @@ export class MapComponent implements OnInit {
             "elementType": "labels",
             "stylers": [
                 {
-                    "visibility": "off"
-                }
-            ]
-        },
-        {
-            "featureType": "road.highway",
-            "elementType": "labels",
-            "stylers": [
+                    "color": "#b5b5b5"
+                },
                 {
-                    "visibility": "off"
-                }
-            ]
-        },
-        {
-            "featureType": "road.highway",
-            "elementType": "labels.text",
-            "stylers": [
-                {
-                    "visibility": "off"
-                }
-            ]
-        },
-        {
-            "featureType": "road.highway",
-            "elementType": "labels.text.fill",
-            "stylers": [
-                {
-                    "visibility": "off"
-                }
-            ]
-        },
-        {
-            "featureType": "road.highway",
-            "elementType": "labels.text.stroke",
-            "stylers": [
-                {
-                    "visibility": "off"
+                    "visibility": "simplified"
                 }
             ]
         },
@@ -308,10 +271,10 @@ export class MapComponent implements OnInit {
             "elementType": "geometry",
             "stylers": [
                 {
-                    "visibility": "on"
+                    "lightness": 700
                 },
                 {
-                    "lightness": 700
+                    "visibility": "on"
                 }
             ]
         },
@@ -326,7 +289,6 @@ export class MapComponent implements OnInit {
         },
         {
             "featureType": "water",
-            "elementType": "all",
             "stylers": [
                 {
                     "color": "#eaf6f8"
@@ -342,8 +304,8 @@ export class MapComponent implements OnInit {
     ) {
     }
 
-    public ngOnInit(){
-        
+    public ngOnInit() {
+
     }
 
     public centerChange(e) {
