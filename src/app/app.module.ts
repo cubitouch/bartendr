@@ -39,7 +39,7 @@ import { BarathonService } from './services/barathon.service';
   imports: [
     BrowserModule,
     HttpClientModule,
-    IonicModule.forRoot(MyApp, {}, {
+    IonicModule.forRoot(MyApp, { backButtonText: 'Retour' }, {
       links: [
         { component: HomePage, name: 'Home', segment: 'home' },
         { component: AboutPage, name: 'About', segment: 'about' },
