@@ -29,6 +29,7 @@ export class MeetingPage implements OnInit {
         this.placesService.runMidway();
       }
     } else {
+      this.placesService.clearPlaces();
       this.placesService.runBarathon(this.barathonCount);
     }
   }
