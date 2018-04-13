@@ -30,7 +30,7 @@
         <div *ngSwitchCase="'midway'">
             <ion-list>
                 <ion-list-header>
-                    Entrez vos adresses pour trouver un point de rendez-vous :
+                    Entrez vos adresses pour trouver un point de rendez-vous&nbsp;:
                 </ion-list-header>
                 <place-autocomplete *ngFor="let place of placesService?.places" [place]="place"></place-autocomplete>
             </ion-list>
@@ -53,7 +53,7 @@
         <div *ngSwitchCase="'barathon'">
             <ion-list>
                 <ion-list-header>
-                    Choisissez un nombre de bar et lancez le barathon :
+                    Choisissez un nombre de bar et lancez le barathon&nbsp;:
                 </ion-list-header>
                 <ion-item>
                     <ion-label color="primary" floating>Nombre de bars</ion-label>

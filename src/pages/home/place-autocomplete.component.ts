@@ -24,6 +24,9 @@ export class PlaceAutocompleteComponent implements OnInit {
     this.mapsAPILoader.load().then(() => {
       let search = document.querySelector('#search-' + this.place.id + ' input');
       search["value"] = this.place.adress;
+      if (this.place.adress) {
+        search.parentElement.parentElement.parentElement.parentElement.classList.add('item-input-has-value');
+      }
       let autocomplete = new google.maps.places.Autocomplete(search, {
         types: ["address"]
       });
@@ -43,7 +46,7 @@ export class PlaceAutocompleteComponent implements OnInit {
       });
     });
   }
-  
+
   private setPosition(adress: string, lat: number, lng: number) {
     this.place.position = { latitude: lat, longitude: lng };
     this.place.isAquired = true;
